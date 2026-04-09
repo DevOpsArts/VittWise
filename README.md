@@ -66,18 +66,18 @@ A simple, client-side tax calculator to compare **Old vs New Tax Regime** for In
    git add .
    git commit -m "Initial commit - Tax Calculator"
    git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/taxregime-calculator.git
+   git remote add origin https://github.com/YOUR_USERNAME/VittWise.git
    git push -u origin main
    ```
 3. Go to Repository **Settings** → **Pages**
 4. Under "Source", select **main** branch
 5. Click **Save**
-6. Your site will be live at `https://YOUR_USERNAME.github.io/taxregime-calculator/`
+6. Your site will be live at `https://YOUR_USERNAME.github.io/VittWise/`
 
 ## Files
 
 ```
-taxregime-calculator/
+VittWise/
 ├── index.html      # Main HTML page
 ├── styles.css      # Styling
 ├── script.js       # Tax calculation logic
