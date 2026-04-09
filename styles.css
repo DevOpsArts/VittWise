@@ -452,8 +452,37 @@ table td:last-child {
     margin-bottom: 15px;
 }
 
-.reset-btn {
+.export-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.export-btn {
+    flex: 1;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.export-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(17, 153, 142, 0.3);
+}
+
+.export-btn.gratuity-export {
+    margin-top: 20px;
     width: 100%;
+}
+
+.reset-btn {
+    flex: 1;
     padding: 14px 24px;
     background: #4a5568;
     color: white;
@@ -463,7 +492,6 @@ table td:last-child {
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s;
-    margin-top: 20px;
 }
 
 .reset-btn:hover {
