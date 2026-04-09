@@ -72,27 +72,6 @@
                     </div>
                 </section>
 
-                <!-- HRA Details (conditional) -->
-                <section class="form-section" id="hraSection" style="display: none;">
-                    <h2>🏠 HRA Exemption Details</h2>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="rentPaid">Rent Paid (Annual)</label>
-                            <div class="input-wrapper">
-                                <span class="currency">₹</span>
-                                <input type="number" id="rentPaid" placeholder="0">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="metroCity">City Type</label>
-                            <select id="metroCity">
-                                <option value="yes">Metro (Delhi, Mumbai, Chennai, Kolkata)</option>
-                                <option value="no">Non-Metro</option>
-                            </select>
-                        </div>
-                    </div>
-                </section>
-
                 <!-- Deductions Section -->
                 <section class="form-section">
                     <h2>📋 Deductions (Old Regime Only)</h2>
@@ -199,6 +178,27 @@
                                     <input type="number" id="section80G" placeholder="0">
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- HRA Exemption Details (Old Regime Only) -->
+                <section class="form-section" id="hraSection" style="display: none;">
+                    <h2>🏠 HRA Exemption Details (Old Regime Only)</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="rentPaid">Rent Paid (Annual)</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" id="rentPaid" placeholder="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="metroCity">City Type</label>
+                            <select id="metroCity">
+                                <option value="yes">Metro (Delhi, Mumbai, Chennai, Kolkata)</option>
+                                <option value="no">Non-Metro</option>
+                            </select>
                         </div>
                     </div>
                 </section>
