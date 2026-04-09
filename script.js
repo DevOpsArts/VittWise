@@ -303,6 +303,75 @@ function getOldSlabBreakdown(income) {
     return slabs;
 }
 
+// ============ GRATUITY CALCULATOR ============
+function calculateGratuity() {
+    const monthlyBasic = getInputValue('gratuityBasic');
+    const cashAllowance = getInputValue('cashAllowance');
+    const yearsOfService = parseFloat(document.getElementById('yearsOfService').value) || 0;
+    
+    if (monthlyBasic <= 0 || yearsOfService <= 0) {
+        alert('Please enter valid Monthly Basic and Years of Service');
+        return;
+    }
+    
+    // Calculate Wages (Basic + Cash Allowance)
+    const wages = monthlyBasic + cashAllowance;
+    
+    // Gratuity Formula: (15/26) × Monthly Salary × Years of Service
+    const gratuityFactor = 15 / 26;
+    
+    // Old Structure: Based on Basic
+    const oldGratuity = gratuityFactor * monthlyBasic * yearsOfService;
+    
+    // New Structure: Based on Wages
+    const newGratuity = gratuityFactor * wages * yearsOfService;
+    
+    // Difference
+    const difference = newGratuity - oldGratuity;
+    
+    // Display Results
+    displayGratuityResults({
+        monthlyBasic,
+        cashAllowance,
+        wages,
+        yearsOfService,
+        oldGratuity,
+        newGratuity,
+        difference
+    });
+}
+
+function displayGratuityResults(data) {
+    const resultsDiv = document.getElementById('gratuityResults');
+    resultsDiv.style.display = 'block';
+    
+    // Old Structure
+    document.getElementById('oldGratuityAmount').textContent = formatCurrency(Math.round(data.oldGratuity * 100) / 100);
+    document.getElementById('oldGratuityCalc').textContent = 
+        `15/26 × ${formatCurrency(data.monthlyBasic)} × ${data.yearsOfService} = ${formatCurrency(Math.round(data.oldGratuity * 100) / 100)}`;
+    
+    // New Structure
+    document.getElementById('newGratuityAmount').textContent = formatCurrency(Math.round(data.newGratuity * 100) / 100);
+    document.getElementById('newGratuityCalc').textContent = 
+        `15/26 × ${formatCurrency(data.wages)} × ${data.yearsOfService} = ${formatCurrency(Math.round(data.newGratuity * 100) / 100)}`;
+    
+    // Difference
+    const diffElement = document.getElementById('gratuityDifference');
+    const benefitBox = document.getElementById('gratuityBenefit');
+    diffElement.textContent = formatCurrency(Math.round(data.difference * 100) / 100);
+    
+    if (data.difference > 0) {
+        benefitBox.classList.add('positive');
+        benefitBox.classList.remove('negative');
+    } else {
+        benefitBox.classList.remove('positive');
+        benefitBox.classList.add('negative');
+    }
+    
+    // Scroll to results
+    resultsDiv.scrollIntoView({ behavior: 'smooth' });
+}
+
 function getNewSlabBreakdown(income) {
     const slabs = [];
     let remaining = income;
