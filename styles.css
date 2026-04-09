@@ -89,65 +89,6 @@ header {
     font-size: 1rem;
 }
 
-/* Tax Regime Selector */
-.regime-selector-section {
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-    border: 2px solid #0ea5e9;
-}
-
-.regime-selector-section h2 {
-    border-bottom-color: #0ea5e9;
-}
-
-.regime-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-}
-
-.regime-option {
-    cursor: pointer;
-}
-
-.regime-option input[type="radio"] {
-    display: none;
-}
-
-.regime-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 15px;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    background: white;
-    transition: all 0.3s ease;
-    text-align: center;
-}
-
-.regime-card:hover {
-    border-color: #667eea;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
-}
-
-.regime-option input[type="radio"]:checked + .regime-card {
-    border-color: #667eea;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-}
-
-.regime-title {
-    font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 5px;
-}
-
-.regime-desc {
-    font-size: 0.8rem;
-    opacity: 0.8;
-}
-
 main {
     padding: 30px;
 }

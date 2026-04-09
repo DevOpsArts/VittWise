@@ -24,26 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('taxForm');
     const hraInput = document.getElementById('hra');
     const hraSection = document.getElementById('hraSection');
-    const deductionsSection = document.getElementById('deductionsSection');
     
-    // Tax Regime Selection Handler
-    const regimeRadios = document.querySelectorAll('input[name="taxRegime"]');
-    regimeRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            handleRegimeChange(this.value);
-        });
-    });
-    
-    // Initialize based on default selection (new regime)
-    handleRegimeChange('new');
-    
-    // Show/hide HRA section based on HRA input (only if old regime or compare)
+    // Show/hide HRA section based on HRA input
     hraInput.addEventListener('input', function() {
         const hraValue = parseFloat(this.value) || 0;
-        const selectedRegime = document.querySelector('input[name="taxRegime"]:checked').value;
-        if (selectedRegime === 'old' || selectedRegime === 'compare') {
-            hraSection.style.display = hraValue > 0 ? 'block' : 'none';
-        }
+        hraSection.style.display = hraValue > 0 ? 'block' : 'none';
     });
     
     // Update 80C total in real-time
@@ -57,24 +42,6 @@ document.addEventListener('DOMContentLoaded', function() {
         calculateTax();
     });
 });
-
-// Handle Tax Regime Change
-function handleRegimeChange(regime) {
-    const deductionsSection = document.getElementById('deductionsSection');
-    const hraSection = document.getElementById('hraSection');
-    const hraValue = parseFloat(document.getElementById('hra').value) || 0;
-    
-    if (regime === 'new') {
-        // New Regime: Hide deductions and HRA sections
-        deductionsSection.style.display = 'none';
-        hraSection.style.display = 'none';
-    } else {
-        // Old Regime or Compare: Show deductions section
-        deductionsSection.style.display = 'block';
-        // Show HRA section only if HRA value exists
-        hraSection.style.display = hraValue > 0 ? 'block' : 'none';
-    }
-}
 
 function update80CTotal() {
     const epf = parseFloat(document.getElementById('epf').value) || 0;
@@ -178,12 +145,8 @@ function calculateTax() {
     const cessNew = taxNew * 0.04;
     const totalTaxNew = taxNew + cessNew;
     
-    // Get selected regime
-    const selectedRegime = document.querySelector('input[name="taxRegime"]:checked').value;
-    
     // ============ DISPLAY RESULTS ============
     displayResults({
-        selectedRegime,
         grossIncome,
         totalDeductionsOld,
         taxableIncomeOld,
@@ -276,42 +239,6 @@ function displayResults(data) {
     // Scroll to results
     resultsSection.scrollIntoView({ behavior: 'smooth' });
     
-    const oldCard = document.querySelector('.tax-card.old-regime');
-    const newCard = document.querySelector('.tax-card.new-regime');
-    const recommendationBox = document.getElementById('recommendation');
-    const breakdownSection = document.querySelector('.breakdown-section');
-    const deductionsSummary = document.querySelector('.deductions-summary');
-    
-    // Show/hide cards based on selected regime
-    if (data.selectedRegime === 'old') {
-        oldCard.style.display = 'block';
-        newCard.style.display = 'none';
-        recommendationBox.style.display = 'none';
-        if (deductionsSummary) deductionsSummary.style.display = 'block';
-        // Hide new regime slab breakdown
-        const breakdownCards = document.querySelectorAll('.breakdown-card');
-        if (breakdownCards[0]) breakdownCards[0].style.display = 'block';
-        if (breakdownCards[1]) breakdownCards[1].style.display = 'none';
-    } else if (data.selectedRegime === 'new') {
-        oldCard.style.display = 'none';
-        newCard.style.display = 'block';
-        recommendationBox.style.display = 'none';
-        if (deductionsSummary) deductionsSummary.style.display = 'none';
-        // Hide old regime slab breakdown
-        const breakdownCards = document.querySelectorAll('.breakdown-card');
-        if (breakdownCards[0]) breakdownCards[0].style.display = 'none';
-        if (breakdownCards[1]) breakdownCards[1].style.display = 'block';
-    } else {
-        // Compare mode - show both
-        oldCard.style.display = 'block';
-        newCard.style.display = 'block';
-        recommendationBox.style.display = 'block';
-        if (deductionsSummary) deductionsSummary.style.display = 'block';
-        const breakdownCards = document.querySelectorAll('.breakdown-card');
-        if (breakdownCards[0]) breakdownCards[0].style.display = 'block';
-        if (breakdownCards[1]) breakdownCards[1].style.display = 'block';
-    }
-    
     // Old Regime Card
     document.getElementById('oldTaxAmount').textContent = formatCurrency(data.totalTaxOld);
     document.getElementById('oldGross').textContent = formatCurrency(data.grossIncome);
@@ -326,29 +253,31 @@ function displayResults(data) {
     document.getElementById('newTaxable').textContent = formatCurrency(data.taxableIncomeNew);
     document.getElementById('newTaxCess').textContent = formatCurrency(data.totalTaxNew);
     
-    // Recommendation (only for compare mode)
-    if (data.selectedRegime === 'compare') {
-        const savings = Math.abs(data.totalTaxNew - data.totalTaxOld);
-        const oldIsBetter = data.totalTaxOld < data.totalTaxNew;
-        const recommendedRegime = oldIsBetter ? 'Old Tax Regime' : 'New Tax Regime';
-        
-        // Remove previous winner class
-        oldCard.classList.remove('winner');
-        newCard.classList.remove('winner');
-        
-        if (oldIsBetter) {
-            oldCard.classList.add('winner');
-            recommendationBox.classList.remove('loss');
-        } else {
-            newCard.classList.add('winner');
-            recommendationBox.classList.remove('loss');
-        }
-        
-        document.getElementById('badgeText').textContent = 'RECOMMENDED';
-        document.getElementById('recommendedRegime').textContent = recommendedRegime;
-        document.getElementById('savingsText').textContent = `You save ${formatCurrency(savings)} annually`;
-        document.getElementById('monthlySavings').textContent = `Monthly savings: ${formatCurrency(Math.round(savings / 12))}`;
+    // Recommendation
+    const savings = Math.abs(data.totalTaxNew - data.totalTaxOld);
+    const oldIsBetter = data.totalTaxOld < data.totalTaxNew;
+    const recommendedRegime = oldIsBetter ? 'Old Tax Regime' : 'New Tax Regime';
+    
+    const recommendationBox = document.getElementById('recommendation');
+    const oldCard = document.querySelector('.old-regime');
+    const newCard = document.querySelector('.new-regime');
+    
+    // Remove previous winner class
+    oldCard.classList.remove('winner');
+    newCard.classList.remove('winner');
+    
+    if (oldIsBetter) {
+        oldCard.classList.add('winner');
+        recommendationBox.classList.remove('loss');
+    } else {
+        newCard.classList.add('winner');
+        recommendationBox.classList.remove('loss');
     }
+    
+    document.getElementById('badgeText').textContent = 'RECOMMENDED';
+    document.getElementById('recommendedRegime').textContent = recommendedRegime;
+    document.getElementById('savingsText').textContent = `You save ${formatCurrency(savings)} annually`;
+    document.getElementById('monthlySavings').textContent = `Monthly savings: ${formatCurrency(Math.round(savings / 12))}`;
     
     // Populate Old Regime Slabs Table
     const oldSlabData = getOldSlabBreakdown(data.taxableIncomeOld);
