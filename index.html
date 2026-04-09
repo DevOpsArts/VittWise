@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Regime Calculator - FY 2025-26</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧮 Tax Regime Calculator</h1>
+            <p class="subtitle">Compare Old vs New Tax Regime for FY 2025-26 (AY 2026-27)</p>
+        </header>
+
+        <main>
+            <form id="taxForm">
+                <!-- Income Section -->
+                <section class="form-section">
+                    <h2>💰 Income Details</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="basicSalary">Basic Salary (Annual) *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" id="basicSalary" required placeholder="e.g., 2100000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="hra">HRA Received (Annual)</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" id="hra" placeholder="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="allowances">Other Allowances (Annual)</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" id="allowances" placeholder="Cash, Conveyance, etc.">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="otherIncome">Other Income (Interest, etc.)</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" id="otherIncome" placeholder="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="employerNps">Employer NPS Contribution (80CCD-2)</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" id="employerNps" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- HRA Details (conditional) -->
+                <section class="form-section" id="hraSection" style="display: none;">
+                    <h2>🏠 HRA Exemption Details</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="rentPaid">Rent Paid (Annual)</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" id="rentPaid" placeholder="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="metroCity">City Type</label>
+                            <select id="metroCity">
+                                <option value="yes">Metro (Delhi, Mumbai, Chennai, Kolkata)</option>
+                                <option value="no">Non-Metro</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Deductions Section -->
+                <section class="form-section">
+                    <h2>📋 Deductions (Old Regime Only)</h2>
+                    
+                    <div class="deduction-category">
+                        <h3>Section 80C (Max ₹1,50,000)</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="epf">EPF Contribution (Employee)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency">₹</span>
+                                    <input type="number" id="epf" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="ppf">PPF / ELSS / Life Insurance</label>
+                                <div class="input-wrapper">
+                                    <span class="currency">₹</span>
+                                    <input type="number" id="ppf" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="childEducation">Child Education Fees (Max 2 children)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency">₹</span>
+                                    <input type="number" id="childEducation" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="homeLoanPrincipal">Home Loan Principal Repayment</label>
+                                <div class="input-wrapper">
+                                    <span class="currency">₹</span>
+                                    <input type="number" id="homeLoanPrincipal" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+                        <p class="total-80c" id="total80c">Total 80C: ₹0 (Eligible: ₹0)</p>
+                    </div>
+
+                    <div class="deduction-category">
+                        <h3>Section 24(b) - Home Loan Interest</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="homeLoanInterest">Home Loan Interest (Max ₹2,00,000)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency">₹</span>
+                                    <input type="number" id="homeLoanInterest" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deduction-category">
+                        <h3>Section 80CCD(1B) - Additional NPS</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="selfNps">Self NPS Contribution (Max ₹50,000)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency">₹</span>
+                                    <input type="number" id="selfNps" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deduction-category">
+                        <h3>Section 80D - Health Insurance</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="healthInsuranceSelf">Self & Family (Max ₹25,000)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency">₹</span>
+                                    <input type="number" id="healthInsuranceSelf" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="healthInsuranceParents">Parents (Max ₹50,000 if senior)</label>
+                                <div class="input-wrapper">
+                                    <span class="currency">₹</span>
+                                    <input type="number" id="healthInsuranceParents" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="parentsSenior">
+                                <label for="parentsSenior">Parents are Senior Citizens (60+)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deduction-category">
+                        <h3>Other Deductions</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="section80E">80E - Education Loan Interest</label>
+                                <div class="input-wrapper">
+                                    <span class="currency">₹</span>
+                                    <input type="number" id="section80E" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="section80G">80G - Donations</label>
+                                <div class="input-wrapper">
+                                    <span class="currency">₹</span>
+                                    <input type="number" id="section80G" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <button type="submit" class="calculate-btn">Calculate Tax Comparison</button>
+            </form>
+
+            <!-- Results Section -->
+            <section id="results" class="results-section" style="display: none;">
+                <h2>📊 Tax Comparison Results</h2>
+                
+                <div class="comparison-cards">
+                    <div class="tax-card old-regime">
+                        <h3>Old Tax Regime</h3>
+                        <div class="tax-amount" id="oldTaxAmount">₹0</div>
+                        <div class="tax-details">
+                            <p>Gross Income: <span id="oldGross">₹0</span></p>
+                            <p>Total Deductions: <span id="oldDeductions">₹0</span></p>
+                            <p>Taxable Income: <span id="oldTaxable">₹0</span></p>
+                            <p>Tax + Cess: <span id="oldTaxCess">₹0</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="tax-card new-regime">
+                        <h3>New Tax Regime</h3>
+                        <div class="tax-amount" id="newTaxAmount">₹0</div>
+                        <div class="tax-details">
+                            <p>Gross Income: <span id="newGross">₹0</span></p>
+                            <p>Standard Deduction: <span id="newStdDed">₹75,000</span></p>
+                            <p>Taxable Income: <span id="newTaxable">₹0</span></p>
+                            <p>Tax + Cess: <span id="newTaxCess">₹0</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recommendation-box" id="recommendation">
+                    <div class="badge" id="badgeText">RECOMMENDED</div>
+                    <h3 id="recommendedRegime">Old Tax Regime</h3>
+                    <p id="savingsText">You save ₹0 annually</p>
+                    <p id="monthlySavings">Monthly savings: ₹0</p>
+                </div>
+
+                <!-- Detailed Breakdown -->
+                <div class="breakdown-section">
+                    <h3>📋 Detailed Breakdown</h3>
+                    
+                    <div class="breakdown-grid">
+                        <div class="breakdown-card">
+                            <h4>Old Regime Slabs</h4>
+                            <table id="oldSlabTable">
+                                <thead>
+                                    <tr><th>Slab</th><th>Rate</th><th>Tax</th></tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="breakdown-card">
+                            <h4>New Regime Slabs</h4>
+                            <table id="newSlabTable">
+                                <thead>
+                                    <tr><th>Slab</th><th>Rate</th><th>Tax</th></tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="deductions-summary">
+                        <h4>Your Deductions (Old Regime)</h4>
+                        <table id="deductionsTable">
+                            <thead>
+                                <tr><th>Section</th><th>Description</th><th>Amount</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <button class="reset-btn" onclick="resetForm()">Calculate Again</button>
+            </section>
+        </main>
+
+        <footer>
+            <p>Disclaimer: This calculator is for informational purposes only. Please consult a tax professional for accurate tax planning.</p>
+            <p>Tax slabs are as per Union Budget 2025-26</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
