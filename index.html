@@ -287,7 +287,10 @@
                     </div>
                 </div>
 
-                <button class="reset-btn" onclick="resetForm()">Calculate Again</button>
+                <div class="export-buttons">
+                    <button class="export-btn" onclick="exportTaxResults()">📥 Export Results</button>
+                    <button class="reset-btn" onclick="resetForm()">Calculate Again</button>
+                </div>
             </section>
             </form>
             </div>
@@ -355,6 +358,7 @@
                     <div class="gratuity-benefit" id="gratuityBenefit">
                         <p>💰 <strong>Benefit from New Structure:</strong> <span id="gratuityDifference">₹0</span></p>
                     </div>
+                    <button class="export-btn gratuity-export" onclick="exportGratuityResults()">📥 Export Results</button>
                 </div>
             </section>
             </div>
