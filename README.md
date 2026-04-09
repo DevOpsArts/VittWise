@@ -1,10 +1,12 @@
-# Tax Regime Calculator - FY 2025-26
+# VittWise 💰 - Smart Tax Regime Calculator
+
+> **Vitt (वित्त)** = Finance in Hindi | **Wise** = Smart
 
 A simple, client-side tax calculator to compare **Old vs New Tax Regime** for Indian taxpayers for Financial Year 2025-26 (Assessment Year 2026-27).
 
 ## Live Demo
 
-Visit: `https://your-username.github.io/taxregime-calculator/`
+🌐 **Visit: https://devopsarts.github.io/VittWise/**
 
 ## Features
 
