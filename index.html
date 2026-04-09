@@ -72,6 +72,34 @@
                     </div>
                 </section>
 
+                <!-- Tax Regime Selection -->
+                <section class="form-section regime-selector-section">
+                    <h2>🎯 Select Tax Regime</h2>
+                    <div class="regime-options">
+                        <label class="regime-option">
+                            <input type="radio" name="taxRegime" value="old" id="oldRegime">
+                            <div class="regime-card">
+                                <span class="regime-title">Old Tax Regime</span>
+                                <span class="regime-desc">With deductions & exemptions</span>
+                            </div>
+                        </label>
+                        <label class="regime-option">
+                            <input type="radio" name="taxRegime" value="new" id="newRegime" checked>
+                            <div class="regime-card">
+                                <span class="regime-title">New Tax Regime</span>
+                                <span class="regime-desc">Lower rates, no deductions</span>
+                            </div>
+                        </label>
+                        <label class="regime-option">
+                            <input type="radio" name="taxRegime" value="compare" id="compareRegime">
+                            <div class="regime-card">
+                                <span class="regime-title">Compare Both</span>
+                                <span class="regime-desc">See which saves more</span>
+                            </div>
+                        </label>
+                    </div>
+                </section>
+
                 <!-- HRA Details (conditional) -->
                 <section class="form-section" id="hraSection" style="display: none;">
                     <h2>🏠 HRA Exemption Details</h2>
@@ -94,7 +122,7 @@
                 </section>
 
                 <!-- Deductions Section -->
-                <section class="form-section">
+                <section class="form-section" id="deductionsSection" style="display: none;">
                     <h2>📋 Deductions (Old Regime Only)</h2>
                     
                     <div class="deduction-category">
