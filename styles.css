@@ -51,6 +51,21 @@ header {
 .tab-navigation {
     display: flex;
     gap: 10px;
+    align-items: center;
+}
+
+.github-link {
+    color: white;
+    opacity: 0.8;
+    transition: opacity 0.2s, transform 0.2s;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.github-link:hover {
+    opacity: 1;
+    transform: scale(1.1);
 }
 
 .tab-btn {
