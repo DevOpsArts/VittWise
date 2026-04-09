@@ -38,6 +38,22 @@ header {
     font-size: 1.8rem;
     font-weight: 700;
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rupee-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #ffd93d 0%, #ffb347 100%);
+    border-radius: 8px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1e3a5f;
 }
 
 .logo-subtitle {
@@ -45,7 +61,7 @@ header {
     opacity: 0.8;
     letter-spacing: 2px;
     text-transform: uppercase;
-    margin-left: 70px;
+    margin-left: 46px;
 }
 
 .tab-navigation {
@@ -55,12 +71,15 @@ header {
 }
 
 .github-link {
-    color: white;
-    opacity: 0.8;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    color: #1e3a5f;
+    opacity: 0.7;
     transition: opacity 0.2s, transform 0.2s;
-    margin-left: 10px;
     display: flex;
     align-items: center;
+    z-index: 1000;
 }
 
 .github-link:hover {
