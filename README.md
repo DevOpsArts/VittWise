@@ -1,4 +1,4 @@
-# VittWise 💰 - Smart Tax Regime Calculator
+# VittWise ₹ - Smart Tax Regime Calculator
 
 > **Vitt (वित्त)** = Finance in Hindi | **Wise** = Smart
 
