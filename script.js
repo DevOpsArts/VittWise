@@ -1,6 +1,25 @@
 // Tax Regime Calculator - FY 2025-26
 // SECURITY_NOTE: All calculations are performed client-side. No sensitive data is transmitted.
 
+// Tab Switching Function
+function switchTab(tabId) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remove active class from all tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab content
+    document.getElementById(tabId).classList.add('active');
+    
+    // Add active class to clicked button
+    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('taxForm');
     const hraInput = document.getElementById('hra');

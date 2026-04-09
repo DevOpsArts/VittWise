@@ -10,12 +10,26 @@
 <body>
     <div class="container">
         <header>
-            <h1>💰 VittWise</h1>
-            <p class="subtitle">Smart Tax Regime Comparison for FY 2025-26 (AY 2026-27)</p>
+            <div class="header-content">
+                <div class="logo">
+                    <h1>💰 VittWise</h1>
+                </div>
+                <nav class="tab-navigation">
+                    <button class="tab-btn active" data-tab="taxTab" onclick="switchTab('taxTab')">
+                        📊 Tax Regime
+                    </button>
+                    <button class="tab-btn" data-tab="gratuityTab" onclick="switchTab('gratuityTab')">
+                        🎁 Gratuity
+                    </button>
+                </nav>
+            </div>
         </header>
 
         <main>
-            <form id="taxForm">
+            <!-- Tax Regime Tab Content -->
+            <div id="taxTab" class="tab-content active">
+                <p class="tab-subtitle">Smart Tax Regime Comparison for FY 2025-26 (AY 2026-27)</p>
+                <form id="taxForm">
                 <!-- Income Section -->
                 <section class="form-section">
                     <h2>💰 Income Details</h2>
@@ -266,9 +280,13 @@
 
                 <button class="reset-btn" onclick="resetForm()">Calculate Again</button>
             </section>
+            </form>
+            </div>
 
-            <!-- Gratuity Calculator Section -->
-            <section class="form-section gratuity-section">
+            <!-- Gratuity Tab Content -->
+            <div id="gratuityTab" class="tab-content">
+                <p class="tab-subtitle">Gratuity Calculator - Understanding the New Labour Laws</p>
+                <section class="form-section gratuity-section">
                 <h2>🎁 Gratuity Calculator</h2>
                 <div class="gratuity-info">
                     <div class="info-box not-changing">
@@ -330,6 +348,7 @@
                     </div>
                 </div>
             </section>
+            </div>
         </main>
 
         <footer>
