@@ -2,7 +2,7 @@
 
 > **Vitt (वित्त)** = Finance in Hindi | **Wise** = Smart
 
-A simple, client-side tax calculator to compare **Old vs New Tax Regime** for Indian taxpayers for Financial Year 2025-26 (Assessment Year 2026-27).
+A simple, client-side tax calculator to compare **Old vs New Tax Regime** for **Individual Salaried Employees** for Financial Year 2026-27 (Assessment Year 2027-28).
 
 ## Live Demo
 
@@ -12,6 +12,7 @@ A simple, client-side tax calculator to compare **Old vs New Tax Regime** for In
 
 - **Compare Tax Regimes**: Instantly see which regime saves you more tax
 - **All Major Deductions**: Supports HRA, 80C, 80D, 80CCD, 24(b), 80E, 80G
+- **80CCD(2) in New Regime**: Employer NPS contribution correctly deducted in both regimes
 - **Real-time Calculations**: No server required - all calculations in browser
 - **Detailed Breakdown**: View slab-wise tax calculation
 - **Mobile Responsive**: Works on all devices
@@ -36,8 +37,9 @@ A simple, client-side tax calculator to compare **Old vs New Tax Regime** for In
 | Section | Deduction | Max Limit |
 |---------|-----------|-----------|
 | Standard Deduction | Flat deduction | ₹75,000 |
+| 80CCD(2) | Employer NPS | 10% of Basic |
 
-## Tax Slabs FY 2025-26
+## Tax Slabs FY 2026-27
 
 ### Old Regime
 | Income Slab | Tax Rate |
@@ -47,15 +49,20 @@ A simple, client-side tax calculator to compare **Old vs New Tax Regime** for In
 | ₹5L - ₹10L | 20% |
 | Above ₹10L | 30% |
 
-### New Regime
+> Rebate u/s 87A: No tax if taxable income ≤ ₹5L
+
+### New Regime (Budget 2025)
 | Income Slab | Tax Rate |
 |-------------|----------|
-| Up to ₹3L | Nil |
-| ₹3L - ₹7L | 5% |
-| ₹7L - ₹10L | 10% |
-| ₹10L - ₹12L | 15% |
-| ₹12L - ₹15L | 20% |
-| Above ₹15L | 30% |
+| Up to ₹4L | Nil |
+| ₹4L - ₹8L | 5% |
+| ₹8L - ₹12L | 10% |
+| ₹12L - ₹16L | 15% |
+| ₹16L - ₹20L | 20% |
+| ₹20L - ₹24L | 25% |
+| Above ₹24L | 30% |
+
+> Rebate u/s 87A: No tax if taxable income ≤ ₹12L
 
 ## How to Deploy on GitHub Pages
 
