@@ -251,6 +251,16 @@ input[type="number"] {
     margin-bottom: 15px;
 }
 
+.total-ctc {
+    margin-top: 15px;
+    padding: 12px 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: white;
+}
+
 .total-80c {
     margin-top: 15px;
     padding: 10px 15px;

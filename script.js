@@ -29,6 +29,13 @@ document.addEventListener('DOMContentLoaded', function() {
     hraInput.addEventListener('input', function() {
         const hraValue = parseFloat(this.value) || 0;
         hraSection.style.display = hraValue > 0 ? 'block' : 'none';
+        updateTotalCtc();
+    });
+    
+    // Update Total CTC in real-time
+    const ctcInputs = ['basicSalary', 'hra', 'allowances', 'otherIncome', 'employerPf', 'gratuity', 'employerNps'];
+    ctcInputs.forEach(id => {
+        document.getElementById(id).addEventListener('input', updateTotalCtc);
     });
     
     // Update 80C total in real-time
@@ -42,6 +49,20 @@ document.addEventListener('DOMContentLoaded', function() {
         calculateTax();
     });
 });
+
+function updateTotalCtc() {
+    const basicSalary = parseFloat(document.getElementById('basicSalary').value) || 0;
+    const hra = parseFloat(document.getElementById('hra').value) || 0;
+    const allowances = parseFloat(document.getElementById('allowances').value) || 0;
+    const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
+    const employerPf = parseFloat(document.getElementById('employerPf').value) || 0;
+    const gratuity = parseFloat(document.getElementById('gratuity').value) || 0;
+    const employerNps = parseFloat(document.getElementById('employerNps').value) || 0;
+    
+    const totalCtc = basicSalary + hra + allowances + otherIncome + employerPf + gratuity + employerNps;
+    
+    document.getElementById('totalCtc').textContent = `Total CTC: ₹${formatNumber(totalCtc)}`;
+}
 
 function update80CTotal() {
     const epf = parseFloat(document.getElementById('epf').value) || 0;
