@@ -166,7 +166,9 @@ function calculateTax() {
     const totalTaxOld = taxOld + cessOld;
     
     // ============ NEW REGIME CALCULATION ============
-    const taxableIncomeNew = Math.max(0, grossIncome - stdDeductionNew);
+    // 80CCD(2) employer NPS is allowed as deduction in new regime too
+    const totalDeductionsNew = stdDeductionNew + eligible80CCD2;
+    const taxableIncomeNew = Math.max(0, grossIncome - totalDeductionsNew);
     const taxNew = calculateNewRegimeTax(taxableIncomeNew);
     const cessNew = taxNew * 0.04;
     const totalTaxNew = taxNew + cessNew;
@@ -184,6 +186,7 @@ function calculateTax() {
         cessNew,
         totalTaxNew,
         stdDeductionNew,
+        newRegimeNps: eligible80CCD2,
         deductions: {
             stdDeduction: stdDeductionOld,
             hraExemption,
@@ -226,32 +229,35 @@ function calculateOldRegimeTax(income) {
 }
 
 function calculateNewRegimeTax(income) {
-    // New Regime Slabs FY 2025-26 (as per Budget 2025)
-    // 0 - 3L: 0%
-    // 3L - 7L: 5%
-    // 7L - 10L: 10%
-    // 10L - 12L: 15%
-    // 12L - 15L: 20%
-    // Above 15L: 30%
+    // New Regime Slabs FY 2025-26 (Budget 2025)
+    // 0 - 4L: 0%
+    // 4L - 8L: 5%
+    // 8L - 12L: 10%
+    // 12L - 16L: 15%
+    // 16L - 20L: 20%
+    // 20L - 24L: 25%
+    // Above 24L: 30%
     
     let tax = 0;
     
-    if (income <= 300000) {
+    if (income <= 400000) {
         tax = 0;
-    } else if (income <= 700000) {
-        tax = (income - 300000) * 0.05;
-    } else if (income <= 1000000) {
-        tax = 20000 + (income - 700000) * 0.10;
+    } else if (income <= 800000) {
+        tax = (income - 400000) * 0.05;
     } else if (income <= 1200000) {
-        tax = 20000 + 30000 + (income - 1000000) * 0.15;
-    } else if (income <= 1500000) {
-        tax = 20000 + 30000 + 30000 + (income - 1200000) * 0.20;
+        tax = 20000 + (income - 800000) * 0.10;
+    } else if (income <= 1600000) {
+        tax = 20000 + 40000 + (income - 1200000) * 0.15;
+    } else if (income <= 2000000) {
+        tax = 20000 + 40000 + 60000 + (income - 1600000) * 0.20;
+    } else if (income <= 2400000) {
+        tax = 20000 + 40000 + 60000 + 80000 + (income - 2000000) * 0.25;
     } else {
-        tax = 20000 + 30000 + 30000 + 60000 + (income - 1500000) * 0.30;
+        tax = 20000 + 40000 + 60000 + 80000 + 100000 + (income - 2400000) * 0.30;
     }
     
-    // Rebate u/s 87A (if taxable income <= 7L, no tax in new regime)
-    if (income <= 700000) {
+    // Rebate u/s 87A (if taxable income <= 12L, no tax in new regime)
+    if (income <= 1200000) {
         tax = 0;
     }
     
@@ -276,6 +282,7 @@ function displayResults(data) {
     document.getElementById('newTaxAmount').textContent = formatCurrency(data.totalTaxNew);
     document.getElementById('newGross').textContent = formatCurrency(data.grossIncome);
     document.getElementById('newStdDed').textContent = formatCurrency(data.stdDeductionNew);
+    document.getElementById('newNpsDed').textContent = formatCurrency(data.newRegimeNps);
     document.getElementById('newTaxable').textContent = formatCurrency(data.taxableIncomeNew);
     document.getElementById('newTaxCess').textContent = formatCurrency(data.totalTaxNew);
     
@@ -421,42 +428,49 @@ function getNewSlabBreakdown(income) {
     const slabs = [];
     let remaining = income;
     
-    // 0 - 3L
-    const slab1 = Math.min(remaining, 300000);
-    slabs.push({ slab: '0 - 3L', rate: '0%', tax: 0 });
+    // 0 - 4L
+    const slab1 = Math.min(remaining, 400000);
+    slabs.push({ slab: '0 - 4L', rate: '0%', tax: 0 });
     remaining -= slab1;
     
-    // 3L - 7L
+    // 4L - 8L
     if (remaining > 0) {
         const slab2 = Math.min(remaining, 400000);
-        slabs.push({ slab: '3L - 7L', rate: '5%', tax: slab2 * 0.05 });
+        slabs.push({ slab: '4L - 8L', rate: '5%', tax: slab2 * 0.05 });
         remaining -= slab2;
     }
     
-    // 7L - 10L
+    // 8L - 12L
     if (remaining > 0) {
-        const slab3 = Math.min(remaining, 300000);
-        slabs.push({ slab: '7L - 10L', rate: '10%', tax: slab3 * 0.10 });
+        const slab3 = Math.min(remaining, 400000);
+        slabs.push({ slab: '8L - 12L', rate: '10%', tax: slab3 * 0.10 });
         remaining -= slab3;
     }
     
-    // 10L - 12L
+    // 12L - 16L
     if (remaining > 0) {
-        const slab4 = Math.min(remaining, 200000);
-        slabs.push({ slab: '10L - 12L', rate: '15%', tax: slab4 * 0.15 });
+        const slab4 = Math.min(remaining, 400000);
+        slabs.push({ slab: '12L - 16L', rate: '15%', tax: slab4 * 0.15 });
         remaining -= slab4;
     }
     
-    // 12L - 15L
+    // 16L - 20L
     if (remaining > 0) {
-        const slab5 = Math.min(remaining, 300000);
-        slabs.push({ slab: '12L - 15L', rate: '20%', tax: slab5 * 0.20 });
+        const slab5 = Math.min(remaining, 400000);
+        slabs.push({ slab: '16L - 20L', rate: '20%', tax: slab5 * 0.20 });
         remaining -= slab5;
     }
     
-    // Above 15L
+    // 20L - 24L
     if (remaining > 0) {
-        slabs.push({ slab: 'Above 15L', rate: '30%', tax: remaining * 0.30 });
+        const slab6 = Math.min(remaining, 400000);
+        slabs.push({ slab: '20L - 24L', rate: '25%', tax: slab6 * 0.25 });
+        remaining -= slab6;
+    }
+    
+    // Above 24L
+    if (remaining > 0) {
+        slabs.push({ slab: 'Above 24L', rate: '30%', tax: remaining * 0.30 });
     }
     
     return slabs;
