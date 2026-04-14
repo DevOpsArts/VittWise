@@ -4,6 +4,42 @@
     box-sizing: border-box;
 }
 
+/* Announcement Rolling Bar */
+.announcement-bar {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+    color: white;
+    padding: 10px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+}
+
+.announcement-content {
+    display: inline-block;
+    animation: scroll-left 25s linear infinite;
+    padding-left: 100%;
+}
+
+.announcement-content span {
+    display: inline-block;
+    padding: 0 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+@keyframes scroll-left {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.announcement-bar:hover .announcement-content {
+    animation-play-state: paused;
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
