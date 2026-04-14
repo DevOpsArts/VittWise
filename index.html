@@ -15,11 +15,7 @@
             <div class="announcement-content">
                 <span>🔒 Your data is NOT tracked or stored anywhere - All calculations happen in your browser</span>
                 <span>•</span>
-                <span>📅 This calculator is for Financial Year 2026-27 (Assessment Year 2027-28)</span>
-                <span>•</span>
-                <span>🔒 Your data is NOT tracked or stored anywhere - All calculations happen in your browser</span>
-                <span>•</span>
-                <span>📅 This calculator is for Financial Year 2026-27 (Assessment Year 2027-28)</span>
+                <span>� Your data is NOT tracked or stored anywhere - All calculations happen in your browser</span>
                 <span>•</span>
             </div>
         </div>
@@ -55,59 +51,81 @@
         <main>
             <!-- Tax Regime Tab Content -->
             <div id="taxTab" class="tab-content active">
-                <p class="tab-subtitle">Smart Tax Regime Comparison for FY 2026-27 (AY 2027-28)</p>
+                <!-- FY Sub-Tabs -->
+                <div class="fy-tab-nav">
+                    <button class="fy-tab-btn active" data-fy="fy2026" onclick="switchFY('fy2026')">FY 2026-27</button>
+                    <button class="fy-tab-btn" data-fy="fy2025" onclick="switchFY('fy2025')">FY 2025-26</button>
+                    <button class="fy-tab-btn" data-fy="fy2024" onclick="switchFY('fy2024')">FY 2024-25</button>
+                    <button class="fy-tab-btn" data-fy="fy2023" onclick="switchFY('fy2023')">FY 2023-24</button>
+                </div>
+                <p class="tab-subtitle" id="fySubtitle">Smart Tax Regime Comparison for FY 2026-27 (AY 2027-28)</p>
                 <form id="taxForm">
                 <!-- Income Section -->
                 <section class="form-section">
                     <h2>💰 Income Details <span class="section-subtitle">For Individual Salaried Employees</span></h2>
                     <div class="form-grid">
                         <div class="form-group">
+                            <label for="ageGroup">Your Age Group (<span id="ageGroupFYLabel">FY 2026-27</span>)</label>
+                            <select id="ageGroup">
+                                <option value="below60">Below 60 years</option>
+                                <option value="senior">Senior Citizen (60 – 79 years)</option>
+                                <option value="super_senior">Super Senior Citizen (80+ years)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label for="basicSalary">Basic Salary (Annual) *</label>
                             <div class="input-wrapper">
                                 <span class="currency">₹</span>
-                                <input type="number" id="basicSalary" required placeholder="e.g., 2100000">
+                                <input type="number" step="any" id="basicSalary" required placeholder="e.g., 2100000">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="hra">HRA Received (Annual)</label>
                             <div class="input-wrapper">
                                 <span class="currency">₹</span>
-                                <input type="number" id="hra" placeholder="0">
+                                <input type="number" step="any" id="hra" placeholder="0">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="allowances">Other Allowances (Annual)</label>
                             <div class="input-wrapper">
                                 <span class="currency">₹</span>
-                                <input type="number" id="allowances" placeholder="Cash, Conveyance, etc.">
+                                <input type="number" step="any" id="allowances" placeholder="Cash, Conveyance, etc.">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="otherIncome">Other Income (Interest, etc.)</label>
                             <div class="input-wrapper">
                                 <span class="currency">₹</span>
-                                <input type="number" id="otherIncome" placeholder="0">
+                                <input type="number" step="any" id="otherIncome" placeholder="0">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="employerPf">Employer PF Contribution (Annual)</label>
                             <div class="input-wrapper">
                                 <span class="currency">₹</span>
-                                <input type="number" id="employerPf" placeholder="0">
+                                <input type="number" step="any" id="employerPf" placeholder="0">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="gratuity">Gratuity (Annual)</label>
                             <div class="input-wrapper">
                                 <span class="currency">₹</span>
-                                <input type="number" id="gratuity" placeholder="4.81% of Basic">
+                                <input type="number" step="any" id="gratuity" placeholder="4.81% × Annual Wages (Basic + DA/Allowances)">
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="employerType">Employer Type (for 80CCD-2 limit)</label>
+                            <select id="employerType">
+                                <option value="private">Private Sector / PSU (10% of Basic)</option>
+                                <option value="govt">Central / State Government (14% of Basic)</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="employerNps">Employer NPS Contribution (80CCD-2)</label>
                             <div class="input-wrapper">
                                 <span class="currency">₹</span>
-                                <input type="number" id="employerNps" placeholder="0">
+                                <input type="number" step="any" id="employerNps" placeholder="0">
                             </div>
                         </div>
                     </div>
@@ -125,28 +143,28 @@
                                 <label for="epf">EPF Contribution (Employee)</label>
                                 <div class="input-wrapper">
                                     <span class="currency">₹</span>
-                                    <input type="number" id="epf" placeholder="0">
+                                    <input type="number" step="any" id="epf" placeholder="0">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="ppf">PPF / ELSS / Life Insurance</label>
                                 <div class="input-wrapper">
                                     <span class="currency">₹</span>
-                                    <input type="number" id="ppf" placeholder="0">
+                                    <input type="number" step="any" id="ppf" placeholder="0">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="childEducation">Child Education Fees (Max 2 children)</label>
                                 <div class="input-wrapper">
                                     <span class="currency">₹</span>
-                                    <input type="number" id="childEducation" placeholder="0">
+                                    <input type="number" step="any" id="childEducation" placeholder="0">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="homeLoanPrincipal">Home Loan Principal Repayment</label>
                                 <div class="input-wrapper">
                                     <span class="currency">₹</span>
-                                    <input type="number" id="homeLoanPrincipal" placeholder="0">
+                                    <input type="number" step="any" id="homeLoanPrincipal" placeholder="0">
                                 </div>
                             </div>
                         </div>
@@ -160,7 +178,7 @@
                                 <label for="homeLoanInterest">Home Loan Interest (Max ₹2,00,000)</label>
                                 <div class="input-wrapper">
                                     <span class="currency">₹</span>
-                                    <input type="number" id="homeLoanInterest" placeholder="0">
+                                    <input type="number" step="any" id="homeLoanInterest" placeholder="0">
                                 </div>
                             </div>
                         </div>
@@ -173,7 +191,7 @@
                                 <label for="selfNps">Self NPS Contribution (Max ₹50,000)</label>
                                 <div class="input-wrapper">
                                     <span class="currency">₹</span>
-                                    <input type="number" id="selfNps" placeholder="0">
+                                    <input type="number" step="any" id="selfNps" placeholder="0">
                                 </div>
                             </div>
                         </div>
@@ -183,17 +201,17 @@
                         <h3>Section 80D - Health Insurance</h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="healthInsuranceSelf">Self & Family (Max ₹25,000)</label>
+                                <label for="healthInsuranceSelf">Self &amp; Family (Max ₹25,000 / ₹50,000 if Senior Citizen)</label>
                                 <div class="input-wrapper">
                                     <span class="currency">₹</span>
-                                    <input type="number" id="healthInsuranceSelf" placeholder="0">
+                                    <input type="number" step="any" id="healthInsuranceSelf" placeholder="0">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="healthInsuranceParents">Parents (Max ₹50,000 if senior)</label>
                                 <div class="input-wrapper">
                                     <span class="currency">₹</span>
-                                    <input type="number" id="healthInsuranceParents" placeholder="0">
+                                    <input type="number" step="any" id="healthInsuranceParents" placeholder="0">
                                 </div>
                             </div>
                             <div class="form-group checkbox-group">
@@ -210,14 +228,14 @@
                                 <label for="section80E">80E - Education Loan Interest</label>
                                 <div class="input-wrapper">
                                     <span class="currency">₹</span>
-                                    <input type="number" id="section80E" placeholder="0">
+                                    <input type="number" step="any" id="section80E" placeholder="0">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="section80G">80G - Donations</label>
+                                <label for="section80G">80G - Donations (enter eligible deductible amount after 50%/100% rule)</label>
                                 <div class="input-wrapper">
                                     <span class="currency">₹</span>
-                                    <input type="number" id="section80G" placeholder="0">
+                                    <input type="number" step="any" id="section80G" placeholder="0">
                                 </div>
                             </div>
                         </div>
@@ -232,7 +250,7 @@
                             <label for="rentPaid">Rent Paid (Annual)</label>
                             <div class="input-wrapper">
                                 <span class="currency">₹</span>
-                                <input type="number" id="rentPaid" placeholder="0">
+                                <input type="number" step="any" id="rentPaid" placeholder="0">
                             </div>
                         </div>
                         <div class="form-group">
@@ -260,7 +278,10 @@
                             <p>Gross Income: <span id="oldGross">₹0</span></p>
                             <p>Total Deductions: <span id="oldDeductions">₹0</span></p>
                             <p>Taxable Income: <span id="oldTaxable">₹0</span></p>
-                            <p>Tax + Cess: <span id="oldTaxCess">₹0</span></p>
+                            <p>Income Tax: <span id="oldBaseTax">₹0</span></p>
+                            <p id="oldSurchargeRow" style="display:none">Surcharge: <span id="oldSurcharge">₹0</span></p>
+                            <p>Cess (4%): <span id="oldCess">₹0</span></p>
+                            <p><strong>Total Tax: <span id="oldTaxCess">₹0</span></strong></p>
                         </div>
                     </div>
                     
@@ -272,7 +293,10 @@
                             <p>Standard Deduction: <span id="newStdDed">₹75,000</span></p>
                             <p>Employer NPS (80CCD-2): <span id="newNpsDed">₹0</span></p>
                             <p>Taxable Income: <span id="newTaxable">₹0</span></p>
-                            <p>Tax + Cess: <span id="newTaxCess">₹0</span></p>
+                            <p>Income Tax: <span id="newBaseTax">₹0</span></p>
+                            <p id="newSurchargeRow" style="display:none">Surcharge: <span id="newSurcharge">₹0</span></p>
+                            <p>Cess (4%): <span id="newCess">₹0</span></p>
+                            <p><strong>Total Tax: <span id="newTaxCess">₹0</span></strong></p>
                         </div>
                     </div>
                 </div>
@@ -352,14 +376,14 @@
                         <label for="gratuityBasic">Monthly Basic Salary *</label>
                         <div class="input-wrapper">
                             <span class="currency">₹</span>
-                            <input type="number" id="gratuityBasic" required placeholder="e.g., 100000">
+                            <input type="number" step="any" id="gratuityBasic" required placeholder="e.g., 100000">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="cashAllowance">Monthly Cash Allowance</label>
                         <div class="input-wrapper">
                             <span class="currency">₹</span>
-                            <input type="number" id="cashAllowance" placeholder="e.g., 22595">
+                            <input type="number" step="any" id="cashAllowance" placeholder="e.g., 22595">
                         </div>
                     </div>
                     <div class="form-group">

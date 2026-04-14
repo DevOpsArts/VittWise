@@ -1,6 +1,78 @@
 // Tax Regime Calculator - FY 2026-27
 // SECURITY_NOTE: All calculations are performed client-side. No sensitive data is transmitted.
 
+// ============ FY CONFIGURATION ============
+const FY_CONFIG = {
+    fy2026: {
+        label: 'FY 2026-27', ayLabel: 'AY 2027-28',
+        stdDeductionNew: 75000,
+        rebate87ANew: { limit: 1200000, max: 60000 },
+        newSlabs: [
+            { upper: 400000,  rate: 0.00, label: '0 – 4L' },
+            { upper: 800000,  rate: 0.05, label: '4L – 8L' },
+            { upper: 1200000, rate: 0.10, label: '8L – 12L' },
+            { upper: 1600000, rate: 0.15, label: '12L – 16L' },
+            { upper: 2000000, rate: 0.20, label: '16L – 20L' },
+            { upper: 2400000, rate: 0.25, label: '20L – 24L' },
+            { upper: Infinity, rate: 0.30, label: 'Above 24L' }
+        ]
+    },
+    fy2025: {
+        label: 'FY 2025-26', ayLabel: 'AY 2026-27',
+        stdDeductionNew: 75000,
+        rebate87ANew: { limit: 1200000, max: 60000 },
+        newSlabs: [
+            { upper: 400000,  rate: 0.00, label: '0 – 4L' },
+            { upper: 800000,  rate: 0.05, label: '4L – 8L' },
+            { upper: 1200000, rate: 0.10, label: '8L – 12L' },
+            { upper: 1600000, rate: 0.15, label: '12L – 16L' },
+            { upper: 2000000, rate: 0.20, label: '16L – 20L' },
+            { upper: 2400000, rate: 0.25, label: '20L – 24L' },
+            { upper: Infinity, rate: 0.30, label: 'Above 24L' }
+        ]
+    },
+    fy2024: {
+        label: 'FY 2024-25', ayLabel: 'AY 2025-26',
+        stdDeductionNew: 75000,
+        rebate87ANew: { limit: 700000, max: 25000 },
+        newSlabs: [
+            { upper: 300000,  rate: 0.00, label: '0 – 3L' },
+            { upper: 700000,  rate: 0.05, label: '3L – 7L' },
+            { upper: 1000000, rate: 0.10, label: '7L – 10L' },
+            { upper: 1200000, rate: 0.15, label: '10L – 12L' },
+            { upper: 1500000, rate: 0.20, label: '12L – 15L' },
+            { upper: Infinity, rate: 0.30, label: 'Above 15L' }
+        ]
+    },
+    fy2023: {
+        label: 'FY 2023-24', ayLabel: 'AY 2024-25',
+        stdDeductionNew: 50000,
+        rebate87ANew: { limit: 700000, max: 25000 },
+        newSlabs: [
+            { upper: 300000,  rate: 0.00, label: '0 – 3L' },
+            { upper: 600000,  rate: 0.05, label: '3L – 6L' },
+            { upper: 900000,  rate: 0.10, label: '6L – 9L' },
+            { upper: 1200000, rate: 0.15, label: '9L – 12L' },
+            { upper: 1500000, rate: 0.20, label: '12L – 15L' },
+            { upper: Infinity, rate: 0.30, label: 'Above 15L' }
+        ]
+    }
+};
+
+let selectedFY = 'fy2026';
+
+function switchFY(fyKey) {
+    selectedFY = fyKey;
+    const cfg = FY_CONFIG[fyKey];
+    document.querySelectorAll('.fy-tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`[data-fy="${fyKey}"]`).classList.add('active');
+    document.getElementById('fySubtitle').textContent =
+        `Smart Tax Regime Comparison for ${cfg.label} (${cfg.ayLabel})`;
+    document.getElementById('ageGroupFYLabel').textContent = cfg.label;
+    // hide results when switching FY
+    document.getElementById('results').style.display = 'none';
+}
+
 // Close announcement bar
 function closeAnnouncement() {
     document.getElementById('announcementBar').classList.add('hidden');
@@ -112,6 +184,9 @@ function calculateTax() {
     const childEducation = getInputValue('childEducation');
     const homeLoanPrincipal = getInputValue('homeLoanPrincipal');
     
+    // Age group and 80D self limit
+    const ageGroup = document.getElementById('ageGroup').value;
+    
     // Other deductions
     const homeLoanInterest = getInputValue('homeLoanInterest');
     const selfNps = getInputValue('selfNps');
@@ -143,35 +218,45 @@ function calculateTax() {
     // Section 80CCD(1B) - Self NPS (capped at 50K)
     const eligible80CCD1B = Math.min(selfNps, 50000);
     
-    // Section 80CCD(2) - Employer NPS (capped at 10% of Basic)
-    const eligible80CCD2 = Math.min(employerNps, basicSalary * 0.10);
+    // Section 80CCD(2) - Employer NPS
+    // OLD REGIME: 10% of Basic for Private/PSU, 14% for Central/State Govt
+    // NEW REGIME: 14% for ALL employer types (per official IT rules AY 2026-27)
+    const employerType = document.getElementById('employerType').value;
+    const npsCapRateOld = employerType === 'govt' ? 0.14 : 0.10;
+    const eligible80CCD2Old = Math.min(employerNps, basicSalary * npsCapRateOld);
+    const eligible80CCD2New = Math.min(employerNps, basicSalary * 0.14);
     
     // Section 80D - Health Insurance
-    const eligible80DSelf = Math.min(healthInsuranceSelf, 25000);
+    // Self/family limit: ₹50,000 if taxpayer is Senior Citizen (60+), else ₹25,000
+    const maxSelf80D = (ageGroup === 'senior' || ageGroup === 'super_senior') ? 50000 : 25000;
+    const eligible80DSelf = Math.min(healthInsuranceSelf, maxSelf80D);
     const maxParents = parentsSenior ? 50000 : 25000;
     const eligible80DParents = Math.min(healthInsuranceParents, maxParents);
     const eligible80D = eligible80DSelf + eligible80DParents;
     
-    // Standard Deduction
+    // Standard Deduction — use FY config for new regime
+    const fyConfig = FY_CONFIG[selectedFY];
     const stdDeductionOld = 50000;
-    const stdDeductionNew = 75000;
+    const stdDeductionNew = fyConfig.stdDeductionNew;
     
     // ============ OLD REGIME CALCULATION ============
     const totalDeductionsOld = stdDeductionOld + hraExemption + eligible80C + eligible24b + 
-                               eligible80CCD1B + eligible80CCD2 + eligible80D + section80E + section80G;
+                               eligible80CCD1B + eligible80CCD2Old + eligible80D + section80E + section80G;
     
     const taxableIncomeOld = Math.max(0, grossIncome - totalDeductionsOld);
-    const taxOld = calculateOldRegimeTax(taxableIncomeOld);
-    const cessOld = taxOld * 0.04;
-    const totalTaxOld = taxOld + cessOld;
+    const taxOld = calculateOldRegimeTax(taxableIncomeOld, ageGroup);
+    const surchargeOld = calculateSurcharge(taxableIncomeOld, taxOld, 'old', ageGroup);
+    const cessOld = (taxOld + surchargeOld) * 0.04;
+    const totalTaxOld = taxOld + surchargeOld + cessOld;
     
     // ============ NEW REGIME CALCULATION ============
-    // 80CCD(2) employer NPS is allowed as deduction in new regime too
-    const totalDeductionsNew = stdDeductionNew + eligible80CCD2;
+    // 80CCD(2) employer NPS allowed in new regime at 14% for all employer types
+    const totalDeductionsNew = stdDeductionNew + eligible80CCD2New;
     const taxableIncomeNew = Math.max(0, grossIncome - totalDeductionsNew);
-    const taxNew = calculateNewRegimeTax(taxableIncomeNew);
-    const cessNew = taxNew * 0.04;
-    const totalTaxNew = taxNew + cessNew;
+    const taxNew = calculateNewRegimeTax(taxableIncomeNew, fyConfig);
+    const surchargeNew = calculateSurcharge(taxableIncomeNew, taxNew, 'new', ageGroup);
+    const cessNew = (taxNew + surchargeNew) * 0.04;
+    const totalTaxNew = taxNew + surchargeNew + cessNew;
     
     // ============ DISPLAY RESULTS ============
     displayResults({
@@ -179,21 +264,27 @@ function calculateTax() {
         totalDeductionsOld,
         taxableIncomeOld,
         taxOld,
+        surchargeOld,
         cessOld,
         totalTaxOld,
         taxableIncomeNew,
         taxNew,
+        surchargeNew,
         cessNew,
         totalTaxNew,
         stdDeductionNew,
-        newRegimeNps: eligible80CCD2,
+        ageGroup,
+        fyLabel: fyConfig.label,
+        ayLabel: fyConfig.ayLabel,
+        fyConfig,
+        newRegimeNps: eligible80CCD2New,
         deductions: {
             stdDeduction: stdDeductionOld,
             hraExemption,
             eligible80C,
             eligible24b,
             eligible80CCD1B,
-            eligible80CCD2,
+            eligible80CCD2: eligible80CCD2Old,
             eligible80D,
             section80E,
             section80G
@@ -201,65 +292,114 @@ function calculateTax() {
     });
 }
 
-function calculateOldRegimeTax(income) {
-    // Old Regime Slabs FY 2025-26
-    // 0 - 2.5L: 0%
-    // 2.5L - 5L: 5%
-    // 5L - 10L: 20%
-    // Above 10L: 30%
-    
+function calculateOldRegimeTax(income, ageGroup) {
+    // Old Regime Slabs FY 2026-27 per official IT dept (AY 2026-27)
     let tax = 0;
     
-    if (income <= 250000) {
-        tax = 0;
-    } else if (income <= 500000) {
-        tax = (income - 250000) * 0.05;
-    } else if (income <= 1000000) {
-        tax = 12500 + (income - 500000) * 0.20;
+    if (ageGroup === 'super_senior') {
+        // Super Senior Citizen (80+ years): Nil up to ₹5L, 20% ₹5L-10L, 30% above ₹10L
+        if (income <= 500000) {
+            tax = 0;
+        } else if (income <= 1000000) {
+            tax = (income - 500000) * 0.20;
+        } else {
+            tax = 100000 + (income - 1000000) * 0.30;
+        }
+        // No 87A needed — slab itself gives 0% up to ₹5L
+    } else if (ageGroup === 'senior') {
+        // Senior Citizen (60-79 years): Nil up to ₹3L, 5% ₹3L-5L, 20% ₹5L-10L, 30% above ₹10L
+        if (income <= 300000) {
+            tax = 0;
+        } else if (income <= 500000) {
+            tax = (income - 300000) * 0.05;
+        } else if (income <= 1000000) {
+            tax = 10000 + (income - 500000) * 0.20;
+        } else {
+            tax = 10000 + 100000 + (income - 1000000) * 0.30;
+        }
+        // 87A rebate: tax ₹0 if income ≤ ₹5L (computed tax ≤ ₹10,000 < ₹12,500 limit)
+        if (income <= 500000) tax = 0;
     } else {
-        tax = 12500 + 100000 + (income - 1000000) * 0.30;
-    }
-    
-    // Rebate u/s 87A (if taxable income <= 5L, no tax)
-    if (income <= 500000) {
-        tax = 0;
+        // Below 60 years: Nil up to ₹2.5L, 5% ₹2.5L-5L, 20% ₹5L-10L, 30% above ₹10L
+        if (income <= 250000) {
+            tax = 0;
+        } else if (income <= 500000) {
+            tax = (income - 250000) * 0.05;
+        } else if (income <= 1000000) {
+            tax = 12500 + (income - 500000) * 0.20;
+        } else {
+            tax = 12500 + 100000 + (income - 1000000) * 0.30;
+        }
+        // 87A rebate: tax ₹0 if income ≤ ₹5L (max rebate ₹12,500)
+        if (income <= 500000) tax = 0;
     }
     
     return tax;
 }
 
-function calculateNewRegimeTax(income) {
-    // New Regime Slabs FY 2025-26 (Budget 2025)
-    // 0 - 4L: 0%
-    // 4L - 8L: 5%
-    // 8L - 12L: 10%
-    // 12L - 16L: 15%
-    // 16L - 20L: 20%
-    // 20L - 24L: 25%
-    // Above 24L: 30%
+function calculateSurcharge(taxableIncome, baseTax, regime, ageGroup) {
+    // Surcharge rates per official IT rules AY 2026-27
+    // Both regimes: 0% up to ₹50L, 10% (₹50L-1Cr), 15% (1Cr-2Cr), 25% (2Cr-5Cr)
+    // New regime: max 25% above ₹5Cr | Old regime: 37% above ₹5Cr
+    // With marginal relief at each surcharge threshold.
+    
+    if (taxableIncome <= 5000000) return 0;
+    
+    let surchargeRate, lowerBoundary, lowerSurchargeRate;
+    
+    if (taxableIncome <= 10000000) {           // ₹50L – ₹1Cr
+        surchargeRate = 0.10;
+        lowerBoundary = 5000000;
+        lowerSurchargeRate = 0;
+    } else if (taxableIncome <= 20000000) {    // ₹1Cr – ₹2Cr
+        surchargeRate = 0.15;
+        lowerBoundary = 10000000;
+        lowerSurchargeRate = 0.10;
+    } else if (taxableIncome <= 50000000) {    // ₹2Cr – ₹5Cr
+        surchargeRate = 0.25;
+        lowerBoundary = 20000000;
+        lowerSurchargeRate = 0.15;
+    } else {                                    // Above ₹5Cr
+        surchargeRate = regime === 'old' ? 0.37 : 0.25;
+        lowerBoundary = 50000000;
+        lowerSurchargeRate = 0.25;
+    }
+    
+    let surcharge = baseTax * surchargeRate;
+    
+    // Marginal relief: (tax + surcharge) must not exceed
+    // (tax_at_boundary + surcharge_at_boundary) + (income - boundary)
+    const taxAtBoundary = regime === 'new'
+        ? calculateNewRegimeTax(lowerBoundary, FY_CONFIG[selectedFY])
+        : calculateOldRegimeTax(lowerBoundary, ageGroup);
+    
+    const taxPlusSurchargeAtBoundary = taxAtBoundary * (1 + lowerSurchargeRate);
+    const maxAllowed = taxPlusSurchargeAtBoundary + (taxableIncome - lowerBoundary);
+    
+    if (baseTax + surcharge > maxAllowed) {
+        surcharge = Math.max(0, maxAllowed - baseTax);
+    }
+    
+    return surcharge;
+}
+
+function calculateNewRegimeTax(income, fyConfig) {
+    // New regime slab computation using FY config
+    // 87A rebate: full rebate up to the FY-specific threshold
+    const slabs = fyConfig ? fyConfig.newSlabs : FY_CONFIG.fy2026.newSlabs;
+    const rebate = fyConfig ? fyConfig.rebate87ANew : FY_CONFIG.fy2026.rebate87ANew;
     
     let tax = 0;
-    
-    if (income <= 400000) {
-        tax = 0;
-    } else if (income <= 800000) {
-        tax = (income - 400000) * 0.05;
-    } else if (income <= 1200000) {
-        tax = 20000 + (income - 800000) * 0.10;
-    } else if (income <= 1600000) {
-        tax = 20000 + 40000 + (income - 1200000) * 0.15;
-    } else if (income <= 2000000) {
-        tax = 20000 + 40000 + 60000 + (income - 1600000) * 0.20;
-    } else if (income <= 2400000) {
-        tax = 20000 + 40000 + 60000 + 80000 + (income - 2000000) * 0.25;
-    } else {
-        tax = 20000 + 40000 + 60000 + 80000 + 100000 + (income - 2400000) * 0.30;
+    let prev = 0;
+    for (const slab of slabs) {
+        if (income <= prev) break;
+        const taxableInSlab = Math.min(income, slab.upper === Infinity ? income : slab.upper) - prev;
+        tax += taxableInSlab * slab.rate;
+        prev = slab.upper === Infinity ? income : slab.upper;
     }
     
-    // Rebate u/s 87A (if taxable income <= 12L, no tax in new regime)
-    if (income <= 1200000) {
-        tax = 0;
-    }
+    // 87A rebate
+    if (income <= rebate.limit) tax = 0;
     
     return tax;
 }
@@ -276,6 +416,10 @@ function displayResults(data) {
     document.getElementById('oldGross').textContent = formatCurrency(data.grossIncome);
     document.getElementById('oldDeductions').textContent = formatCurrency(data.totalDeductionsOld);
     document.getElementById('oldTaxable').textContent = formatCurrency(data.taxableIncomeOld);
+    document.getElementById('oldBaseTax').textContent = formatCurrency(data.taxOld);
+    document.getElementById('oldSurcharge').textContent = formatCurrency(data.surchargeOld);
+    document.getElementById('oldSurchargeRow').style.display = data.surchargeOld > 0 ? 'block' : 'none';
+    document.getElementById('oldCess').textContent = formatCurrency(data.cessOld);
     document.getElementById('oldTaxCess').textContent = formatCurrency(data.totalTaxOld);
     
     // New Regime Card
@@ -284,6 +428,10 @@ function displayResults(data) {
     document.getElementById('newStdDed').textContent = formatCurrency(data.stdDeductionNew);
     document.getElementById('newNpsDed').textContent = formatCurrency(data.newRegimeNps);
     document.getElementById('newTaxable').textContent = formatCurrency(data.taxableIncomeNew);
+    document.getElementById('newBaseTax').textContent = formatCurrency(data.taxNew);
+    document.getElementById('newSurcharge').textContent = formatCurrency(data.surchargeNew);
+    document.getElementById('newSurchargeRow').style.display = data.surchargeNew > 0 ? 'block' : 'none';
+    document.getElementById('newCess').textContent = formatCurrency(data.cessNew);
     document.getElementById('newTaxCess').textContent = formatCurrency(data.totalTaxNew);
     
     // Recommendation
@@ -313,41 +461,69 @@ function displayResults(data) {
     document.getElementById('monthlySavings').textContent = `Monthly savings: ${formatCurrency(Math.round(savings / 12))}`;
     
     // Populate Old Regime Slabs Table
-    const oldSlabData = getOldSlabBreakdown(data.taxableIncomeOld);
+    const oldSlabData = getOldSlabBreakdown(data.taxableIncomeOld, data.ageGroup);
     populateSlabTable('oldSlabTable', oldSlabData);
     
     // Populate New Regime Slabs Table
-    const newSlabData = getNewSlabBreakdown(data.taxableIncomeNew);
+    const newSlabData = getNewSlabBreakdown(data.taxableIncomeNew, data.fyConfig);
     populateSlabTable('newSlabTable', newSlabData);
     
     // Populate Deductions Table
     populateDeductionsTable(data.deductions);
 }
 
-function getOldSlabBreakdown(income) {
+function getOldSlabBreakdown(income, ageGroup) {
     const slabs = [];
     let remaining = income;
     
-    // 0 - 2.5L
-    const slab1 = Math.min(remaining, 250000);
-    slabs.push({ slab: '0 - 2.5L', rate: '0%', tax: 0 });
-    remaining -= slab1;
-    
-    // 2.5L - 5L
-    if (remaining > 0) {
-        const slab2 = Math.min(remaining, 250000);
-        slabs.push({ slab: '2.5L - 5L', rate: '5%', tax: slab2 * 0.05 });
-        remaining -= slab2;
+    if (ageGroup === 'super_senior') {
+        // 0 - 5L: 0%
+        const s1 = Math.min(remaining, 500000);
+        slabs.push({ slab: '0 – 5L', rate: '0%', tax: 0 });
+        remaining -= s1;
+        // 5L - 10L: 20%
+        if (remaining > 0) {
+            const s2 = Math.min(remaining, 500000);
+            slabs.push({ slab: '5L – 10L', rate: '20%', tax: s2 * 0.20 });
+            remaining -= s2;
+        }
+    } else if (ageGroup === 'senior') {
+        // 0 - 3L: 0%
+        const s1 = Math.min(remaining, 300000);
+        slabs.push({ slab: '0 – 3L', rate: '0%', tax: 0 });
+        remaining -= s1;
+        // 3L - 5L: 5%
+        if (remaining > 0) {
+            const s2 = Math.min(remaining, 200000);
+            slabs.push({ slab: '3L – 5L', rate: '5%', tax: s2 * 0.05 });
+            remaining -= s2;
+        }
+        // 5L - 10L: 20%
+        if (remaining > 0) {
+            const s3 = Math.min(remaining, 500000);
+            slabs.push({ slab: '5L – 10L', rate: '20%', tax: s3 * 0.20 });
+            remaining -= s3;
+        }
+    } else {
+        // 0 - 2.5L: 0%
+        const s1 = Math.min(remaining, 250000);
+        slabs.push({ slab: '0 – 2.5L', rate: '0%', tax: 0 });
+        remaining -= s1;
+        // 2.5L - 5L: 5%
+        if (remaining > 0) {
+            const s2 = Math.min(remaining, 250000);
+            slabs.push({ slab: '2.5L – 5L', rate: '5%', tax: s2 * 0.05 });
+            remaining -= s2;
+        }
+        // 5L - 10L: 20%
+        if (remaining > 0) {
+            const s3 = Math.min(remaining, 500000);
+            slabs.push({ slab: '5L – 10L', rate: '20%', tax: s3 * 0.20 });
+            remaining -= s3;
+        }
     }
     
-    // 5L - 10L
-    if (remaining > 0) {
-        const slab3 = Math.min(remaining, 500000);
-        slabs.push({ slab: '5L - 10L', rate: '20%', tax: slab3 * 0.20 });
-        remaining -= slab3;
-    }
-    
-    // Above 10L
+    // Above 10L: 30% (all age groups)
     if (remaining > 0) {
         slabs.push({ slab: 'Above 10L', rate: '30%', tax: remaining * 0.30 });
     }
@@ -424,56 +600,22 @@ function displayGratuityResults(data) {
     resultsDiv.scrollIntoView({ behavior: 'smooth' });
 }
 
-function getNewSlabBreakdown(income) {
-    const slabs = [];
+function getNewSlabBreakdown(income, fyConfig) {
+    const slabs = fyConfig ? fyConfig.newSlabs : FY_CONFIG.fy2026.newSlabs;
+    const result = [];
+    let prev = 0;
     let remaining = income;
     
-    // 0 - 4L
-    const slab1 = Math.min(remaining, 400000);
-    slabs.push({ slab: '0 - 4L', rate: '0%', tax: 0 });
-    remaining -= slab1;
-    
-    // 4L - 8L
-    if (remaining > 0) {
-        const slab2 = Math.min(remaining, 400000);
-        slabs.push({ slab: '4L - 8L', rate: '5%', tax: slab2 * 0.05 });
-        remaining -= slab2;
+    for (const slab of slabs) {
+        if (remaining <= 0) break;
+        const upper = slab.upper === Infinity ? income : slab.upper;
+        const chunk = Math.min(remaining, upper - prev);
+        result.push({ slab: slab.label, rate: `${(slab.rate * 100).toFixed(0)}%`, tax: chunk * slab.rate });
+        remaining -= chunk;
+        prev = upper;
+        if (slab.upper === Infinity) break;
     }
-    
-    // 8L - 12L
-    if (remaining > 0) {
-        const slab3 = Math.min(remaining, 400000);
-        slabs.push({ slab: '8L - 12L', rate: '10%', tax: slab3 * 0.10 });
-        remaining -= slab3;
-    }
-    
-    // 12L - 16L
-    if (remaining > 0) {
-        const slab4 = Math.min(remaining, 400000);
-        slabs.push({ slab: '12L - 16L', rate: '15%', tax: slab4 * 0.15 });
-        remaining -= slab4;
-    }
-    
-    // 16L - 20L
-    if (remaining > 0) {
-        const slab5 = Math.min(remaining, 400000);
-        slabs.push({ slab: '16L - 20L', rate: '20%', tax: slab5 * 0.20 });
-        remaining -= slab5;
-    }
-    
-    // 20L - 24L
-    if (remaining > 0) {
-        const slab6 = Math.min(remaining, 400000);
-        slabs.push({ slab: '20L - 24L', rate: '25%', tax: slab6 * 0.25 });
-        remaining -= slab6;
-    }
-    
-    // Above 24L
-    if (remaining > 0) {
-        slabs.push({ slab: 'Above 24L', rate: '30%', tax: remaining * 0.30 });
-    }
-    
-    return slabs;
+    return result;
 }
 
 function populateSlabTable(tableId, slabData) {
@@ -539,95 +681,85 @@ function resetForm() {
 }
 
 // ============ EXPORT FUNCTIONS ============
+function csvRow(...fields) {
+    return fields.map(f => `"${String(f).replace(/"/g, '""')}"`).join(',');
+}
+
 function exportTaxResults() {
-    const oldTax = document.getElementById('oldTaxAmount').textContent;
-    const newTax = document.getElementById('newTaxAmount').textContent;
-    const grossIncome = document.getElementById('oldGross').textContent;
+    const cfg = FY_CONFIG[selectedFY];
+    const grossIncome   = document.getElementById('oldGross').textContent;
     const oldDeductions = document.getElementById('oldDeductions').textContent;
-    const oldTaxable = document.getElementById('oldTaxable').textContent;
-    const newTaxable = document.getElementById('newTaxable').textContent;
+    const oldTaxable    = document.getElementById('oldTaxable').textContent;
+    const oldBaseTax    = document.getElementById('oldBaseTax').textContent;
+    const oldSurcharge  = document.getElementById('oldSurcharge').textContent;
+    const oldCess       = document.getElementById('oldCess').textContent;
+    const oldTax        = document.getElementById('oldTaxAmount').textContent;
+    const newStdDed     = document.getElementById('newStdDed').textContent;
+    const newNpsDed     = document.getElementById('newNpsDed').textContent;
+    const newTaxable    = document.getElementById('newTaxable').textContent;
+    const newBaseTax    = document.getElementById('newBaseTax').textContent;
+    const newSurcharge  = document.getElementById('newSurcharge').textContent;
+    const newCess       = document.getElementById('newCess').textContent;
+    const newTax        = document.getElementById('newTaxAmount').textContent;
     const recommendation = document.getElementById('recommendedRegime').textContent;
-    const savings = document.getElementById('savingsText').textContent;
+    const savings       = document.getElementById('savingsText').textContent;
+    const monthlySavings = document.getElementById('monthlySavings').textContent;
     
-    const content = `
-=====================================
-    VITTWISE TAX CALCULATION REPORT
-         FY 2025-26 (AY 2026-27)
-=====================================
-
-Generated on: ${new Date().toLocaleString('en-IN')}
-
---- INCOME SUMMARY ---
-Gross Income: ${grossIncome}
-
---- OLD TAX REGIME ---
-Total Deductions: ${oldDeductions}
-Taxable Income: ${oldTaxable}
-Total Tax (incl. Cess): ${oldTax}
-
---- NEW TAX REGIME ---
-Standard Deduction: ₹75,000
-Taxable Income: ${newTaxable}
-Total Tax (incl. Cess): ${newTax}
-
---- RECOMMENDATION ---
-${recommendation}
-${savings}
-
-=====================================
-    Generated by VittWise India
-   https://devopsarts.github.io/VittWise/
-=====================================
-`;
-
-    downloadFile(content, 'VittWise_Tax_Calculation.txt', 'text/plain');
+    const rows = [
+        csvRow('VittWise Tax Calculation Report'),
+        csvRow(`${cfg.label} (${cfg.ayLabel})`),
+        csvRow('Generated on', new Date().toLocaleString('en-IN')),
+        '',
+        csvRow('Particulars', 'Old Regime', 'New Regime'),
+        csvRow('Gross Income', grossIncome, grossIncome),
+        csvRow('Standard Deduction', '(50,000)', newStdDed),
+        csvRow('Employer NPS 80CCD(2)', '', newNpsDed),
+        csvRow('Total Deductions', oldDeductions, ''),
+        csvRow('Taxable Income', oldTaxable, newTaxable),
+        csvRow('Income Tax', oldBaseTax, newBaseTax),
+        csvRow('Surcharge', oldSurcharge, newSurcharge),
+        csvRow('Health & Education Cess (4%)', oldCess, newCess),
+        csvRow('Total Tax Payable', oldTax, newTax),
+        '',
+        csvRow('Recommendation', recommendation),
+        csvRow('Annual Savings', savings),
+        csvRow('Monthly Savings', monthlySavings),
+        '',
+        csvRow('Generated by VittWise India', 'https://devopsarts.github.io/VittWise/')
+    ];
+    
+    downloadFile('﻿' + rows.join('\n'), `VittWise_Tax_${cfg.label.replace(' ', '_')}.csv`, 'text/csv;charset=utf-8;');
 }
 
 function exportGratuityResults() {
-    const oldGratuity = document.getElementById('oldGratuityAmount').textContent;
-    const newGratuity = document.getElementById('newGratuityAmount').textContent;
-    const oldCalc = document.getElementById('oldGratuityCalc').textContent;
-    const newCalc = document.getElementById('newGratuityCalc').textContent;
-    const benefit = document.getElementById('gratuityDifference').textContent;
-    
-    const monthlyBasic = document.getElementById('gratuityBasic').value || '0';
+    const oldGratuity   = document.getElementById('oldGratuityAmount').textContent;
+    const newGratuity   = document.getElementById('newGratuityAmount').textContent;
+    const oldCalc       = document.getElementById('oldGratuityCalc').textContent;
+    const newCalc       = document.getElementById('newGratuityCalc').textContent;
+    const benefit       = document.getElementById('gratuityDifference').textContent;
+    const monthlyBasic  = document.getElementById('gratuityBasic').value || '0';
     const cashAllowance = document.getElementById('cashAllowance').value || '0';
     const yearsOfService = document.getElementById('yearsOfService').value || '0';
     
-    const content = `
-=====================================
-   VITTWISE GRATUITY CALCULATION
-         New Labour Laws
-=====================================
-
-Generated on: ${new Date().toLocaleString('en-IN')}
-
---- INPUT DETAILS ---
-Monthly Basic: ₹${formatNumber(parseFloat(monthlyBasic))}
-Cash Allowance: ₹${formatNumber(parseFloat(cashAllowance))}
-Years of Service: ${yearsOfService}
-
---- OLD STRUCTURE ---
-Formula: 15/26 × Basic × Years
-Calculation: ${oldCalc}
-Amount: ${oldGratuity}
-
---- NEW STRUCTURE ---
-Formula: 15/26 × Wages × Years
-(Wages = Basic + Cash Allowance)
-Calculation: ${newCalc}
-Amount: ${newGratuity}
-
---- BENEFIT ---
-Additional Amount under New Structure: ${benefit}
-
-=====================================
-    Generated by VittWise India
-   https://devopsarts.github.io/VittWise/
-=====================================
-`;
-
-    downloadFile(content, 'VittWise_Gratuity_Calculation.txt', 'text/plain');
+    const rows = [
+        csvRow('VittWise Gratuity Calculation Report'),
+        csvRow('New Labour Laws'),
+        csvRow('Generated on', new Date().toLocaleString('en-IN')),
+        '',
+        csvRow('Particulars', 'Old Structure', 'New Structure'),
+        csvRow('Monthly Basic', `₹${formatNumber(parseFloat(monthlyBasic))}`, ''),
+        csvRow('Monthly Cash Allowance', '', `₹${formatNumber(parseFloat(cashAllowance))}`),
+        csvRow('Years of Service', yearsOfService, yearsOfService),
+        csvRow('Formula', '15/26 × Basic × Years', '15/26 × Wages × Years'),
+        csvRow('Calculation', oldCalc, newCalc),
+        csvRow('Gratuity Amount', oldGratuity, newGratuity),
+        '',
+        csvRow('Additional Benefit (New Structure)', benefit),
+        '',
+        csvRow('Generated by VittWise India', 'https://devopsarts.github.io/VittWise/')
+    ];
+    
+    downloadFile('﻿' + rows.join('\n'), 'VittWise_Gratuity_Calculation.csv', 'text/csv;charset=utf-8;');
 }
 
 function downloadFile(content, filename, contentType) {
