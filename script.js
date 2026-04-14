@@ -1,5 +1,10 @@
-// Tax Regime Calculator - FY 2025-26
+// Tax Regime Calculator - FY 2026-27
 // SECURITY_NOTE: All calculations are performed client-side. No sensitive data is transmitted.
+
+// Close announcement bar
+function closeAnnouncement() {
+    document.getElementById('announcementBar').classList.add('hidden');
+}
 
 // Tab Switching Function
 function switchTab(tabId) {
