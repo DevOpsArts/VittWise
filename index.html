@@ -9,17 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Announcement Bar -->
-    <div class="announcement-bar" id="announcementBar">
-        <div class="announcement-wrapper">
-            <div class="announcement-content">
-                <span>🔒 Your data is NOT tracked or stored anywhere - All calculations happen in your browser</span>
-
-            </div>
-        </div>
-        <button class="announcement-close" onclick="closeAnnouncement()" title="Close">✕</button>
-    </div>
-
     <!-- GitHub Link - Fixed top right -->
     <a href="https://github.com/DevOpsArts/VittWise" target="_blank" class="github-link" title="View on GitHub">
         <svg height="28" width="28" viewBox="0 0 16 16" fill="currentColor">
@@ -28,70 +17,47 @@
     </a>
 
     <div class="app-layout">
-        <!-- Left Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <h1><span class="rupee-icon">₹</span> VittWise</h1>
-                    <span class="logo-subtitle">India</span>
-                </div>
-            </div>
-            <nav class="sidebar-nav">
-                <button class="sidebar-btn active" data-panel="taxPanel" onclick="switchPanel('taxPanel')">
-                    📊 Tax Regime
-                </button>
-                <button class="sidebar-btn" data-panel="sipPanel" onclick="switchPanel('sipPanel')">
-                    📈 SIP Calculator
-                </button>
-                <button class="sidebar-btn" data-panel="fdrdPanel" onclick="switchPanel('fdrdPanel')">
-                    🏦 FD / RD
-                </button>
-                <button class="sidebar-btn" data-panel="ppfPanel" onclick="switchPanel('ppfPanel')">
-                    🏛️ PPF Calculator
-                </button>
-                <button class="sidebar-btn" data-panel="hraPanel" onclick="switchPanel('hraPanel')">
-                    🏠 HRA Exemption
-                </button>
-                <button class="sidebar-btn" data-panel="homeLoanPanel" onclick="switchPanel('homeLoanPanel')">
-                    🏡 Home Loan
-                </button>
-                <button class="sidebar-btn" data-panel="personalLoanPanel" onclick="switchPanel('personalLoanPanel')">
-                    💳 Personal Loan
-                </button>
-                <button class="sidebar-btn" data-panel="carLoanPanel" onclick="switchPanel('carLoanPanel')">
-                    🚗 Car Loan
-                </button>
-                <button class="sidebar-btn" data-panel="lumpsumPanel" onclick="switchPanel('lumpsumPanel')">
-                    💰 Lumpsum
-                </button>
-                <button class="sidebar-btn" data-panel="rentBuyPanel" onclick="switchPanel('rentBuyPanel')">
-                    🏘️ Rent vs Buy
-                </button>
-                <button class="sidebar-btn" data-panel="retirementPanel" onclick="switchPanel('retirementPanel')">
-                    🏖️ Retirement
-                </button>
-                <button class="sidebar-btn" data-panel="epfPanel" onclick="switchPanel('epfPanel')">
-                    🏗️ EPF Calculator
-                </button>
-                <button class="sidebar-btn" data-panel="npsPanel" onclick="switchPanel('npsPanel')">
-                    📋 NPS Calculator
-                </button>
-                <button class="sidebar-btn" data-panel="inflationPanel" onclick="switchPanel('inflationPanel')">
-                    📉 Inflation
-                </button>
-                <button class="sidebar-btn" data-panel="capGainsPanel" onclick="switchPanel('capGainsPanel')">
-                    📑 Capital Gains
-                </button>
-                <button class="sidebar-btn" data-panel="gratuityPanel" onclick="switchPanel('gratuityPanel')">
-                    🎁 Gratuity
-                </button>
-            </nav>
-        </aside>
-
         <!-- Main Content -->
         <div class="main-content">
+            <!-- Top Header Bar -->
+            <div class="content-header" onclick="switchPanel('homePanel')">
+                <span class="rupee-icon">₹</span>
+                <span class="content-header-title">VittWise</span>
+            </div>
+            <!-- ============ HOME PANEL ============ -->
+            <div id="homePanel" class="panel active">
+                <div class="home-container">
+                    <div class="home-hero">
+                        <h1 class="home-title"><span class="rupee-icon">₹</span> VittWise</h1>
+                        <p class="home-tagline">Your Smart Financial Calculator</p>
+                        <div class="home-search-wrapper">
+                            <input type="text" id="homeSearch" class="home-search" placeholder="Search calculators... (e.g., SIP, Home Loan, Tax)" oninput="searchCalculators(this.value)" autocomplete="off">
+                        </div>
+                        <div id="searchResults" class="search-results"></div>
+                    </div>
+                    <div class="home-grid" id="homeGrid">
+                        <div class="home-card" onclick="switchPanel('taxPanel')"><span class="home-card-icon">📊</span><span class="home-card-label">Tax Regime</span></div>
+                        <div class="home-card" onclick="switchPanel('sipPanel')"><span class="home-card-icon">📈</span><span class="home-card-label">SIP Calculator</span></div>
+                        <div class="home-card" onclick="switchPanel('fdrdPanel')"><span class="home-card-icon">🏦</span><span class="home-card-label">FD / RD</span></div>
+                        <div class="home-card" onclick="switchPanel('ppfPanel')"><span class="home-card-icon">🏛️</span><span class="home-card-label">PPF Calculator</span></div>
+                        <div class="home-card" onclick="switchPanel('hraPanel')"><span class="home-card-icon">🏠</span><span class="home-card-label">HRA Exemption</span></div>
+                        <div class="home-card" onclick="switchPanel('homeLoanPanel')"><span class="home-card-icon">🏡</span><span class="home-card-label">Home Loan</span></div>
+                        <div class="home-card" onclick="switchPanel('personalLoanPanel')"><span class="home-card-icon">💳</span><span class="home-card-label">Personal Loan</span></div>
+                        <div class="home-card" onclick="switchPanel('carLoanPanel')"><span class="home-card-icon">🚗</span><span class="home-card-label">Car Loan</span></div>
+                        <div class="home-card" onclick="switchPanel('lumpsumPanel')"><span class="home-card-icon">💰</span><span class="home-card-label">Lumpsum</span></div>
+                        <div class="home-card" onclick="switchPanel('rentBuyPanel')"><span class="home-card-icon">🏘️</span><span class="home-card-label">Rent vs Buy</span></div>
+                        <div class="home-card" onclick="switchPanel('retirementPanel')"><span class="home-card-icon">🏖️</span><span class="home-card-label">Retirement</span></div>
+                        <div class="home-card" onclick="switchPanel('epfPanel')"><span class="home-card-icon">🏗️</span><span class="home-card-label">EPF Calculator</span></div>
+                        <div class="home-card" onclick="switchPanel('npsPanel')"><span class="home-card-icon">📋</span><span class="home-card-label">NPS Calculator</span></div>
+                        <div class="home-card" onclick="switchPanel('inflationPanel')"><span class="home-card-icon">📉</span><span class="home-card-label">Inflation</span></div>
+                        <div class="home-card" onclick="switchPanel('capGainsPanel')"><span class="home-card-icon">📑</span><span class="home-card-label">Capital Gains</span></div>
+                        <div class="home-card" onclick="switchPanel('gratuityPanel')"><span class="home-card-icon">🎁</span><span class="home-card-label">Gratuity</span></div>
+                    </div>
+                </div>
+            </div>
+
             <!-- ============ TAX REGIME PANEL ============ -->
-            <div id="taxPanel" class="panel active">
+            <div id="taxPanel" class="panel">
                 <!-- FY Sub-Tabs -->
                 <div class="fy-tab-nav">
                     <button class="fy-tab-btn active" data-fy="fy2026" onclick="switchFY('fy2026')">FY 2026-27</button>
@@ -454,6 +420,10 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="pie-chart-container">
+                            <canvas id="hlPieChart" width="280" height="280"></canvas>
+                            <div id="hlPieLegend" class="pie-legend"></div>
+                        </div>
                         <div class="recommendation-box" id="hlSavingsBox" style="display:none;">
                             <div class="badge">PREPAYMENT BENEFIT</div>
                             <h3 id="hlSavingsAmount">₹0</h3>
@@ -539,6 +509,10 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="pie-chart-container">
+                            <canvas id="plPieChart" width="280" height="280"></canvas>
+                            <div id="plPieLegend" class="pie-legend"></div>
+                        </div>
                         <div class="recommendation-box" id="plSavingsBox" style="display:none;">
                             <div class="badge">PREPAYMENT BENEFIT</div>
                             <h3 id="plSavingsAmount">₹0</h3>
@@ -621,6 +595,10 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="pie-chart-container">
+                            <canvas id="sipPieChart" width="280" height="280"></canvas>
+                            <div id="sipPieLegend" class="pie-legend"></div>
+                        </div>
                         <div class="breakdown-section">
                             <h3>📋 Year-wise Growth</h3>
                             <div class="breakdown-card">
@@ -695,6 +673,10 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="pie-chart-container">
+                            <canvas id="fdrdPieChart" width="280" height="280"></canvas>
+                            <div id="fdrdPieLegend" class="pie-legend"></div>
+                        </div>
                         <div class="breakdown-section">
                             <h3>📋 Year-wise Breakdown</h3>
                             <div class="breakdown-card">
@@ -759,6 +741,10 @@
                                     <p>Maturity Value: <span id="ppfMaturityVal">₹0</span></p>
                                 </div>
                             </div>
+                        </div>
+                        <div class="pie-chart-container">
+                            <canvas id="ppfPieChart" width="280" height="280"></canvas>
+                            <div id="ppfPieLegend" class="pie-legend"></div>
                         </div>
                         <div class="breakdown-section">
                             <h3>📋 Year-wise PPF Growth</h3>
@@ -900,6 +886,10 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="pie-chart-container">
+                            <canvas id="clPieChart" width="280" height="280"></canvas>
+                            <div id="clPieLegend" class="pie-legend"></div>
+                        </div>
                         <div class="recommendation-box" id="clSavingsBox" style="display:none;">
                             <div class="badge">PREPAYMENT BENEFIT</div>
                             <h3 id="clSavingsAmount">₹0</h3>
@@ -963,6 +953,10 @@
                                     <p>CAGR: <span id="lsCAGR">0%</span></p>
                                 </div>
                             </div>
+                        </div>
+                        <div class="pie-chart-container">
+                            <canvas id="lsPieChart" width="280" height="280"></canvas>
+                            <div id="lsPieLegend" class="pie-legend"></div>
                         </div>
                         <div class="breakdown-section">
                             <h3>📋 Year-wise Growth</h3>
@@ -1238,6 +1232,10 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="pie-chart-container">
+                            <canvas id="epfPieChart" width="280" height="280"></canvas>
+                            <div id="epfPieLegend" class="pie-legend"></div>
+                        </div>
                         <div class="breakdown-section">
                             <h3>📋 Year-wise EPF Growth</h3>
                             <div class="breakdown-card">
@@ -1321,6 +1319,10 @@
                                     <p>Monthly Pension: <span id="npsPensionVal">₹0</span></p>
                                 </div>
                             </div>
+                        </div>
+                        <div class="pie-chart-container">
+                            <canvas id="npsPieChart" width="280" height="280"></canvas>
+                            <div id="npsPieLegend" class="pie-legend"></div>
                         </div>
                     </section>
                 </div>
@@ -1532,9 +1534,16 @@
         </div><!-- /main-content -->
     </div><!-- /app-layout -->
 
+    <!-- Bottom Popup Message -->
+    <div class="bottom-popup" id="bottomPopup">
+        <span class="bottom-popup-icon">🔒</span>
+        <span class="bottom-popup-text">100% Private — No data leaves your device. Everything is calculated locally in your browser.</span>
+        <button class="bottom-popup-close" onclick="closePopup()" title="Close">✕</button>
+    </div>
+
     <footer>
-        <p>Disclaimer: This calculator is for informational purposes only. Please consult a tax professional for accurate tax planning.</p>
-        <p>Tax slabs are as per Union Budget 2025-26</p>
+        <p>Disclaimer: These calculators are for informational purposes only. Please consult a qualified financial advisor for personalized advice.</p>
+        <p>Tax slabs as per Union Budget 2025-26 &bull; EMI calculations use standard reducing balance method &bull; Investment projections are illustrative</p>
     </footer>
 
     <script src="script.js"></script>

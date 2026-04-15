@@ -73,9 +73,167 @@ function switchFY(fyKey) {
     document.getElementById('results').style.display = 'none';
 }
 
-// Close announcement bar
-function closeAnnouncement() {
-    document.getElementById('announcementBar').classList.add('hidden');
+// Close bottom popup & remember dismissal
+function closePopup() {
+    var popup = document.getElementById('bottomPopup');
+    popup.classList.add('dismissed');
+    setTimeout(function() { popup.style.display = 'none'; }, 300);
+    try { localStorage.setItem('vittwise_popup_dismissed', '1'); } catch(e) {}
+}
+
+// Show popup only on first visit
+(function() {
+    try {
+        if (localStorage.getItem('vittwise_popup_dismissed')) {
+            var popup = document.getElementById('bottomPopup');
+            if (popup) popup.style.display = 'none';
+        }
+    } catch(e) {}
+})();
+
+// ============ REUSABLE PIE CHART ============
+function drawPieChart(canvasId, legendId, slices) {
+    // slices: [{label, value, color}]
+    var canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height;
+    var cx = W / 2, cy = H / 2, radius = Math.min(W, H) / 2 - 16;
+
+    var total = 0;
+    slices.forEach(function(s) { total += s.value; });
+    if (total === 0) return;
+
+    // Compute angles once
+    var angles = [];
+    var startA = -Math.PI / 2;
+    slices.forEach(function(s) {
+        var sliceAngle = (s.value / total) * 2 * Math.PI;
+        angles.push({ start: startA, end: startA + sliceAngle, mid: startA + sliceAngle / 2 });
+        startA += sliceAngle;
+    });
+
+    // Render function
+    function render(hoverIdx) {
+        ctx.clearRect(0, 0, W, H);
+        var explode = 14;
+        var holeRadius = radius * 0.45;
+
+        slices.forEach(function(s, i) {
+            var a = angles[i];
+            var isHover = i === hoverIdx;
+            var ox = 0, oy = 0;
+            if (isHover) {
+                ox = explode * Math.cos(a.mid);
+                oy = explode * Math.sin(a.mid);
+            }
+            var r = isHover ? radius + 4 : radius;
+
+            // 3D shadow
+            if (isHover) {
+                ctx.save();
+                ctx.shadowColor = 'rgba(0,0,0,0.35)';
+                ctx.shadowBlur = 18;
+                ctx.shadowOffsetX = 4;
+                ctx.shadowOffsetY = 6;
+            }
+
+            // Slice
+            ctx.beginPath();
+            ctx.moveTo(cx + ox, cy + oy);
+            ctx.arc(cx + ox, cy + oy, r, a.start, a.end);
+            ctx.closePath();
+            ctx.fillStyle = s.color;
+            ctx.fill();
+
+            if (isHover) ctx.restore();
+
+            // Percentage label
+            var pct = Math.round((s.value / total) * 100);
+            if (pct >= 5) {
+                var lDist = isHover ? r * 0.62 : radius * 0.62;
+                var lx = cx + ox + lDist * Math.cos(a.mid);
+                var ly = cy + oy + lDist * Math.sin(a.mid);
+                ctx.fillStyle = '#fff';
+                ctx.font = (isHover ? 'bold 15px' : 'bold 13px') + ' Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(pct + '%', lx, ly);
+            }
+        });
+
+        // Donut hole
+        ctx.beginPath();
+        ctx.arc(cx, cy, holeRadius, 0, 2 * Math.PI);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+
+        // Hover tooltip in center
+        if (hoverIdx >= 0 && hoverIdx < slices.length) {
+            var hs = slices[hoverIdx];
+            ctx.fillStyle = '#1e3a5f';
+            ctx.font = 'bold 14px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(hs.label, cx, cy - 10);
+            ctx.font = '13px Inter, sans-serif';
+            ctx.fillStyle = '#4a5568';
+            ctx.fillText(formatCurrency(Math.round(hs.value)), cx, cy + 10);
+        }
+    }
+
+    // Initial render
+    render(-1);
+
+    // Hit detection
+    function getSliceIndex(e) {
+        var rect = canvas.getBoundingClientRect();
+        var mx = (e.clientX - rect.left) * (W / rect.width);
+        var my = (e.clientY - rect.top) * (H / rect.height);
+        var dx = mx - cx, dy = my - cy;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > radius + 14 || dist < radius * 0.45) return -1;
+        var angle = Math.atan2(dy, dx);
+        if (angle < -Math.PI / 2) angle += 2 * Math.PI;
+        for (var i = 0; i < angles.length; i++) {
+            var a = angles[i];
+            var s = a.start, en = a.end;
+            // Normalize
+            if (angle >= s && angle < en) return i;
+        }
+        return -1;
+    }
+
+    // Remove old listeners
+    var newCanvas = canvas.cloneNode(true);
+    canvas.parentNode.replaceChild(newCanvas, canvas);
+    canvas = newCanvas;
+    ctx = canvas.getContext('2d');
+    render(-1);
+
+    canvas.addEventListener('mousemove', function(e) {
+        var idx = getSliceIndex(e);
+        canvas.style.cursor = idx >= 0 ? 'pointer' : 'default';
+        render(idx);
+    });
+    canvas.addEventListener('mouseleave', function() {
+        canvas.style.cursor = 'default';
+        render(-1);
+    });
+
+    // Legend
+    var legend = document.getElementById(legendId);
+    if (legend) {
+        legend.innerHTML = '';
+        slices.forEach(function(s) {
+            var item = document.createElement('div');
+            item.className = 'pie-legend-item';
+            item.innerHTML = '<span class="pie-legend-dot" style="background:' + s.color + '"></span>' +
+                '<span class="pie-legend-label">' + s.label + '</span>' +
+                '<span class="pie-legend-value">' + formatCurrency(Math.round(s.value)) + '</span>';
+            legend.appendChild(item);
+        });
+    }
 }
 
 // Tab Switching Function (legacy - kept for compatibility)
@@ -86,12 +244,37 @@ function switchTab(tabId) {
     document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
 }
 
-// Panel Switching (sidebar navigation)
+// Panel Switching
 function switchPanel(panelId) {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(panelId).classList.add('active');
-    document.querySelector(`[data-panel="${panelId}"]`).classList.add('active');
+    // Show/hide VittWise header logo (hide on home, show on calculators)
+    var header = document.querySelector('.content-header');
+    if (header) {
+        if (panelId === 'homePanel') {
+            header.classList.remove('visible');
+        } else {
+            header.classList.add('visible');
+        }
+    }
+    // Clear search when navigating away from home
+    var searchInput = document.getElementById('homeSearch');
+    if (searchInput && panelId !== 'homePanel') searchInput.value = '';
+    // Reset home grid visibility
+    var homeCards = document.querySelectorAll('.home-card');
+    homeCards.forEach(function(c) { c.style.display = ''; });
+    // Scroll to top
+    window.scrollTo(0, 0);
+}
+
+// Home search
+function searchCalculators(query) {
+    var cards = document.querySelectorAll('.home-card');
+    var q = query.toLowerCase().trim();
+    cards.forEach(function(card) {
+        var label = card.querySelector('.home-card-label').textContent.toLowerCase();
+        card.style.display = (!q || label.indexOf(q) !== -1) ? '' : 'none';
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -870,6 +1053,10 @@ function calculateHomeLoan() {
         document.getElementById('hlSavingsBox').style.display = 'none';
     }
 
+    drawPieChart('hlPieChart', 'hlPieLegend', [
+        {label: 'Principal', value: principal, color: '#667eea'},
+        {label: 'Interest', value: Math.round(normal.totalInterest), color: '#f093fb'}
+    ]);
     document.getElementById('hlResults').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -957,6 +1144,10 @@ function calculatePersonalLoan() {
         document.getElementById('plSavingsBox').style.display = 'none';
     }
 
+    drawPieChart('plPieChart', 'plPieLegend', [
+        {label: 'Principal', value: principal, color: '#00b4d8'},
+        {label: 'Interest', value: Math.round(normal.totalInterest), color: '#ff6b6b'}
+    ]);
     document.getElementById('plResults').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -1060,6 +1251,10 @@ function calculateSIP() {
         document.getElementById('sipStepUpCard').style.display = 'none';
     }
 
+    drawPieChart('sipPieChart', 'sipPieLegend', [
+        {label: 'Invested', value: Math.round(totalInvested), color: '#6c5ce7'},
+        {label: 'Returns', value: Math.round(gain), color: '#00cec9'}
+    ]);
     document.getElementById('sipResults').style.display = '';
     document.getElementById('sipResults').scrollIntoView({ behavior: 'smooth' });
 }
@@ -1138,6 +1333,10 @@ function calculateFDRD() {
     document.getElementById('fdrdDeposited').textContent = formatCurrency(Math.round(totalDeposited));
     document.getElementById('fdrdInterest').textContent = formatCurrency(Math.round(interest));
     document.getElementById('fdrdMaturityVal').textContent = formatCurrency(Math.round(balance));
+    drawPieChart('fdrdPieChart', 'fdrdPieLegend', [
+        {label: 'Deposited', value: Math.round(totalDeposited), color: '#0984e3'},
+        {label: 'Interest', value: Math.round(interest), color: '#fdcb6e'}
+    ]);
     document.getElementById('fdrdResults').style.display = '';
     document.getElementById('fdrdResults').scrollIntoView({ behavior: 'smooth' });
 }
@@ -1184,6 +1383,10 @@ function calculatePPF() {
     document.getElementById('ppfDeposited').textContent = formatCurrency(Math.round(totalDeposited));
     document.getElementById('ppfInterest').textContent = formatCurrency(Math.round(balance - totalDeposited));
     document.getElementById('ppfMaturityVal').textContent = formatCurrency(Math.round(balance));
+    drawPieChart('ppfPieChart', 'ppfPieLegend', [
+        {label: 'Deposited', value: Math.round(totalDeposited), color: '#2d3436'},
+        {label: 'Interest', value: Math.round(balance - totalDeposited), color: '#55efc4'}
+    ]);
     document.getElementById('ppfResults').style.display = '';
     document.getElementById('ppfResults').scrollIntoView({ behavior: 'smooth' });
 }
@@ -1267,6 +1470,10 @@ function calculateCarLoan() {
         document.getElementById('clSavingsBox').style.display = 'none';
     }
 
+    drawPieChart('clPieChart', 'clPieLegend', [
+        {label: 'Principal', value: principal, color: '#e17055'},
+        {label: 'Interest', value: Math.round(normal.totalInterest), color: '#636e72'}
+    ]);
     document.getElementById('clResults').style.display = '';
     document.getElementById('clResults').scrollIntoView({ behavior: 'smooth' });
 }
@@ -1321,6 +1528,10 @@ function calculateLumpsum() {
         tbody.appendChild(row);
     }
 
+    drawPieChart('lsPieChart', 'lsPieLegend', [
+        {label: 'Invested', value: Math.round(amount), color: '#a29bfe'},
+        {label: 'Returns', value: Math.round(gain), color: '#ffeaa7'}
+    ]);
     document.getElementById('lsResults').style.display = '';
     document.getElementById('lsResults').scrollIntoView({ behavior: 'smooth' });
 }
@@ -1521,6 +1732,11 @@ function calculateEPF() {
     document.getElementById('epfTotalInterest').textContent = formatCurrency(Math.round(totalInterest));
     document.getElementById('epfYearsLeft').textContent = yearsLeft + ' years';
 
+    drawPieChart('epfPieChart', 'epfPieLegend', [
+        {label: 'Your Contribution', value: Math.round(totalEmp), color: '#0984e3'},
+        {label: 'Employer', value: Math.round(totalEmployer), color: '#e17055'},
+        {label: 'Interest', value: Math.round(totalInterest), color: '#00b894'}
+    ]);
     document.getElementById('epfResults').style.display = '';
     document.getElementById('epfResults').scrollIntoView({ behavior: 'smooth' });
 }
@@ -1584,6 +1800,10 @@ function calculateNPS() {
     document.getElementById('npsAnnuityAmt').textContent = formatCurrency(Math.round(annuityAmt));
     document.getElementById('npsPensionVal').textContent = formatCurrency(Math.round(monthlyPension));
 
+    drawPieChart('npsPieChart', 'npsPieLegend', [
+        {label: 'Invested', value: Math.round(totalInvested), color: '#d63031'},
+        {label: 'Returns', value: Math.round(corpus - totalInvested), color: '#74b9ff'}
+    ]);
     document.getElementById('npsResults').style.display = '';
     document.getElementById('npsResults').scrollIntoView({ behavior: 'smooth' });
 }
