@@ -40,11 +40,47 @@
                 <button class="sidebar-btn active" data-panel="taxPanel" onclick="switchPanel('taxPanel')">
                     📊 Tax Regime
                 </button>
+                <button class="sidebar-btn" data-panel="sipPanel" onclick="switchPanel('sipPanel')">
+                    📈 SIP Calculator
+                </button>
+                <button class="sidebar-btn" data-panel="fdrdPanel" onclick="switchPanel('fdrdPanel')">
+                    🏦 FD / RD
+                </button>
+                <button class="sidebar-btn" data-panel="ppfPanel" onclick="switchPanel('ppfPanel')">
+                    🏛️ PPF Calculator
+                </button>
+                <button class="sidebar-btn" data-panel="hraPanel" onclick="switchPanel('hraPanel')">
+                    🏠 HRA Exemption
+                </button>
                 <button class="sidebar-btn" data-panel="homeLoanPanel" onclick="switchPanel('homeLoanPanel')">
-                    🏠 Home Loan
+                    🏡 Home Loan
                 </button>
                 <button class="sidebar-btn" data-panel="personalLoanPanel" onclick="switchPanel('personalLoanPanel')">
                     💳 Personal Loan
+                </button>
+                <button class="sidebar-btn" data-panel="carLoanPanel" onclick="switchPanel('carLoanPanel')">
+                    🚗 Car Loan
+                </button>
+                <button class="sidebar-btn" data-panel="lumpsumPanel" onclick="switchPanel('lumpsumPanel')">
+                    💰 Lumpsum
+                </button>
+                <button class="sidebar-btn" data-panel="rentBuyPanel" onclick="switchPanel('rentBuyPanel')">
+                    🏘️ Rent vs Buy
+                </button>
+                <button class="sidebar-btn" data-panel="retirementPanel" onclick="switchPanel('retirementPanel')">
+                    🏖️ Retirement
+                </button>
+                <button class="sidebar-btn" data-panel="epfPanel" onclick="switchPanel('epfPanel')">
+                    🏗️ EPF Calculator
+                </button>
+                <button class="sidebar-btn" data-panel="npsPanel" onclick="switchPanel('npsPanel')">
+                    📋 NPS Calculator
+                </button>
+                <button class="sidebar-btn" data-panel="inflationPanel" onclick="switchPanel('inflationPanel')">
+                    📉 Inflation
+                </button>
+                <button class="sidebar-btn" data-panel="capGainsPanel" onclick="switchPanel('capGainsPanel')">
+                    📑 Capital Gains
                 </button>
                 <button class="sidebar-btn" data-panel="gratuityPanel" onclick="switchPanel('gratuityPanel')">
                     🎁 Gratuity
@@ -523,6 +559,904 @@
                         </div>
                         <div class="export-buttons">
                             <button class="export-btn" onclick="exportPersonalLoan()">📥 Export CSV</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ============ SIP CALCULATOR PANEL ============ -->
+            <div id="sipPanel" class="panel">
+                <h2 class="panel-title">📈 SIP Calculator</h2>
+                <p class="tab-subtitle">Systematic Investment Plan — estimate your wealth growth over time</p>
+                <section class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="sipMonthly">Monthly SIP Amount *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="sipMonthly" required placeholder="e.g., 10000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sipRate">Expected Annual Return (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="sipRate" required placeholder="e.g., 12">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sipYears">Investment Period (Years) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="sipYears" required placeholder="e.g., 15">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sipStepUp">Annual Step-Up (%) (optional)</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="sipStepUp" placeholder="e.g., 10">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="calculate-btn" onclick="calculateSIP()">Calculate SIP Returns</button>
+                </section>
+                <div id="sipResults" style="display:none;">
+                    <section class="results-section">
+                        <h2>📊 SIP Results</h2>
+                        <div class="comparison-cards">
+                            <div class="tax-card new-regime">
+                                <h3>Without Step-Up</h3>
+                                <div class="tax-amount" id="sipMaturity">₹0</div>
+                                <div class="tax-details">
+                                    <p>Total Invested: <span id="sipInvested">₹0</span></p>
+                                    <p>Wealth Gained: <span id="sipGain">₹0</span></p>
+                                    <p>Maturity Value: <span id="sipMaturityVal">₹0</span></p>
+                                </div>
+                            </div>
+                            <div class="tax-card old-regime" id="sipStepUpCard" style="display:none;">
+                                <h3>With Step-Up</h3>
+                                <div class="tax-amount" id="sipStepMaturity">₹0</div>
+                                <div class="tax-details">
+                                    <p>Total Invested: <span id="sipStepInvested">₹0</span></p>
+                                    <p>Wealth Gained: <span id="sipStepGain">₹0</span></p>
+                                    <p>Maturity Value: <span id="sipStepMaturityVal">₹0</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="breakdown-section">
+                            <h3>📋 Year-wise Growth</h3>
+                            <div class="breakdown-card">
+                                <table id="sipTable">
+                                    <thead><tr><th>Year</th><th>Invested</th><th>Value</th><th>Gain</th></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="export-buttons">
+                            <button class="export-btn" onclick="exportSIP()">📥 Export CSV</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ============ FD/RD CALCULATOR PANEL ============ -->
+            <div id="fdrdPanel" class="panel">
+                <h2 class="panel-title">🏦 FD / RD Calculator</h2>
+                <p class="tab-subtitle">Fixed Deposit &amp; Recurring Deposit maturity calculator</p>
+                <section class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="fdrdType">Deposit Type</label>
+                            <select id="fdrdType">
+                                <option value="fd">Fixed Deposit (FD)</option>
+                                <option value="rd">Recurring Deposit (RD)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fdrdAmount" id="fdrdAmountLabel">Principal Amount *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="fdrdAmount" required placeholder="e.g., 500000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fdrdRate">Annual Interest Rate (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="fdrdRate" required placeholder="e.g., 7.1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fdrdTenure">Tenure (Years) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="fdrdTenure" required placeholder="e.g., 5">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fdrdCompound">Compounding Frequency</label>
+                            <select id="fdrdCompound">
+                                <option value="4">Quarterly</option>
+                                <option value="2">Half-Yearly</option>
+                                <option value="1">Yearly</option>
+                                <option value="12">Monthly</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" class="calculate-btn" onclick="calculateFDRD()">Calculate Maturity</button>
+                </section>
+                <div id="fdrdResults" style="display:none;">
+                    <section class="results-section">
+                        <h2>📊 FD/RD Results</h2>
+                        <div class="comparison-cards">
+                            <div class="tax-card new-regime">
+                                <h3 id="fdrdResultTitle">FD Maturity</h3>
+                                <div class="tax-amount" id="fdrdMaturity">₹0</div>
+                                <div class="tax-details">
+                                    <p>Total Deposited: <span id="fdrdDeposited">₹0</span></p>
+                                    <p>Total Interest: <span id="fdrdInterest">₹0</span></p>
+                                    <p>Maturity Value: <span id="fdrdMaturityVal">₹0</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="breakdown-section">
+                            <h3>📋 Year-wise Breakdown</h3>
+                            <div class="breakdown-card">
+                                <table id="fdrdTable">
+                                    <thead><tr><th>Year</th><th>Deposited</th><th>Interest</th><th>Balance</th></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="export-buttons">
+                            <button class="export-btn" onclick="exportFDRD()">📥 Export CSV</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ============ PPF CALCULATOR PANEL ============ -->
+            <div id="ppfPanel" class="panel">
+                <h2 class="panel-title">🏛️ PPF Calculator</h2>
+                <p class="tab-subtitle">Public Provident Fund — 15-year tax-free investment projection</p>
+                <section class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="ppfYearly">Yearly Contribution *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="ppfYearly" required placeholder="e.g., 150000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ppfRate">Current PPF Interest Rate (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="ppfRate" required placeholder="7.1" value="7.1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ppfTenure">Tenure (Years) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="ppfTenure" required placeholder="15" value="15" min="15" step="5">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ppfExisting">Existing PPF Balance (optional)</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="ppfExisting" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="calculate-btn" onclick="calculatePPF()">Calculate PPF Maturity</button>
+                </section>
+                <div id="ppfResults" style="display:none;">
+                    <section class="results-section">
+                        <h2>📊 PPF Results</h2>
+                        <div class="comparison-cards">
+                            <div class="tax-card new-regime">
+                                <h3>PPF Maturity</h3>
+                                <div class="tax-amount" id="ppfMaturity">₹0</div>
+                                <div class="tax-details">
+                                    <p>Total Deposited: <span id="ppfDeposited">₹0</span></p>
+                                    <p>Total Interest: <span id="ppfInterest">₹0</span></p>
+                                    <p>Maturity Value: <span id="ppfMaturityVal">₹0</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="breakdown-section">
+                            <h3>📋 Year-wise PPF Growth</h3>
+                            <div class="breakdown-card">
+                                <table id="ppfTable">
+                                    <thead><tr><th>Year</th><th>Deposit</th><th>Interest</th><th>Balance</th></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="export-buttons">
+                            <button class="export-btn" onclick="exportPPF()">📥 Export CSV</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ============ HRA EXEMPTION PANEL ============ -->
+            <div id="hraPanel" class="panel">
+                <h2 class="panel-title">🏠 HRA Exemption Calculator</h2>
+                <p class="tab-subtitle">Calculate your HRA exemption under Section 10(13A)</p>
+                <section class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="hraBasic">Basic Salary (Annual) *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="hraBasic" required placeholder="e.g., 600000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="hraDA">Dearness Allowance (Annual)</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="hraDA" placeholder="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="hraReceived">HRA Received (Annual) *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="hraReceived" required placeholder="e.g., 240000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="hraRent">Rent Paid (Annual) *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="hraRent" required placeholder="e.g., 180000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="hraCity">City Type</label>
+                            <select id="hraCity">
+                                <option value="metro">Metro (Delhi, Mumbai, Chennai, Kolkata)</option>
+                                <option value="nonmetro">Non-Metro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" class="calculate-btn" onclick="calculateHRA()">Calculate HRA Exemption</button>
+                </section>
+                <div id="hraResults" style="display:none;">
+                    <section class="results-section">
+                        <h2>📊 HRA Exemption Results</h2>
+                        <div class="comparison-cards">
+                            <div class="tax-card new-regime">
+                                <h3>HRA Exempt</h3>
+                                <div class="tax-amount" id="hraExempt">₹0</div>
+                                <div class="tax-details">
+                                    <p>Actual HRA Received: <span id="hraActual">₹0</span></p>
+                                    <p>50%/40% of Basic+DA: <span id="hraPercent">₹0</span></p>
+                                    <p>Rent − 10% of Basic+DA: <span id="hraRentCalc">₹0</span></p>
+                                    <p><strong>Exempt (min of above): <span id="hraExemptVal">₹0</span></strong></p>
+                                    <p>Taxable HRA: <span id="hraTaxable">₹0</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ============ CAR LOAN PANEL ============ -->
+            <div id="carLoanPanel" class="panel">
+                <h2 class="panel-title">🚗 Car Loan EMI Calculator</h2>
+                <p class="tab-subtitle">Calculate your Car Loan EMI, total interest and prepayment savings</p>
+                <section class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="clLoanAmount">Loan Amount *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="clLoanAmount" required placeholder="e.g., 800000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="clInterestRate">Annual Interest Rate (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="clInterestRate" required placeholder="e.g., 9">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="clTenure">Loan Tenure (Years) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="clTenure" required placeholder="e.g., 7">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="clExtraEmi">Additional Monthly Payment (optional)</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="clExtraEmi" placeholder="e.g., 5000">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="calculate-btn" onclick="calculateCarLoan()">Calculate Car Loan EMI</button>
+                </section>
+                <div id="clResults" style="display:none;">
+                    <section class="results-section">
+                        <h2>📊 Car Loan Results</h2>
+                        <div class="comparison-cards">
+                            <div class="tax-card new-regime">
+                                <h3>Without Prepayment</h3>
+                                <div class="tax-amount" id="clEmi">₹0</div>
+                                <div class="tax-details">
+                                    <p>Monthly EMI: <span id="clEmiVal">₹0</span></p>
+                                    <p>Total Interest: <span id="clTotalInterest">₹0</span></p>
+                                    <p>Total Payment: <span id="clTotalPayment">₹0</span></p>
+                                    <p>Tenure: <span id="clTenureVal">0 months</span></p>
+                                </div>
+                            </div>
+                            <div class="tax-card old-regime" id="clPrepayCard" style="display:none;">
+                                <h3>With Prepayment</h3>
+                                <div class="tax-amount" id="clPrepayEmi">₹0</div>
+                                <div class="tax-details">
+                                    <p>Monthly Payment: <span id="clPrepayEmiVal">₹0</span></p>
+                                    <p>Total Interest: <span id="clPrepayInterest">₹0</span></p>
+                                    <p>Total Payment: <span id="clPrepayTotal">₹0</span></p>
+                                    <p>Tenure: <span id="clPrepayTenure">0 months</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="recommendation-box" id="clSavingsBox" style="display:none;">
+                            <div class="badge">PREPAYMENT BENEFIT</div>
+                            <h3 id="clSavingsAmount">₹0</h3>
+                            <p id="clSavingsText">Interest saved</p>
+                            <p id="clTimeSaved">Time saved: 0 months</p>
+                        </div>
+                        <div class="breakdown-section">
+                            <h3>📋 Year-wise Amortization Schedule</h3>
+                            <div class="breakdown-card">
+                                <table id="clAmortTable">
+                                    <thead><tr><th>Year</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="export-buttons">
+                            <button class="export-btn" onclick="exportCarLoan()">📥 Export CSV</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ============ LUMPSUM CALCULATOR PANEL ============ -->
+            <div id="lumpsumPanel" class="panel">
+                <h2 class="panel-title">💰 Lumpsum Investment Calculator</h2>
+                <p class="tab-subtitle">One-time investment growth projection</p>
+                <section class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="lsAmount">Investment Amount *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="lsAmount" required placeholder="e.g., 500000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lsRate">Expected Annual Return (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="lsRate" required placeholder="e.g., 12">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lsYears">Investment Period (Years) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="lsYears" required placeholder="e.g., 10">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="calculate-btn" onclick="calculateLumpsum()">Calculate Returns</button>
+                </section>
+                <div id="lsResults" style="display:none;">
+                    <section class="results-section">
+                        <h2>📊 Lumpsum Results</h2>
+                        <div class="comparison-cards">
+                            <div class="tax-card new-regime">
+                                <h3>Maturity Value</h3>
+                                <div class="tax-amount" id="lsMaturity">₹0</div>
+                                <div class="tax-details">
+                                    <p>Invested: <span id="lsInvested">₹0</span></p>
+                                    <p>Wealth Gained: <span id="lsGain">₹0</span></p>
+                                    <p>CAGR: <span id="lsCAGR">0%</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="breakdown-section">
+                            <h3>📋 Year-wise Growth</h3>
+                            <div class="breakdown-card">
+                                <table id="lsTable">
+                                    <thead><tr><th>Year</th><th>Value</th><th>Gain</th></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="export-buttons">
+                            <button class="export-btn" onclick="exportLumpsum()">📥 Export CSV</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ============ RENT VS BUY PANEL ============ -->
+            <div id="rentBuyPanel" class="panel">
+                <h2 class="panel-title">🏘️ Rent vs Buy Calculator</h2>
+                <p class="tab-subtitle">Compare the financial impact of renting vs buying a home</p>
+                <section class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="rbPropertyPrice">Property Price *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="rbPropertyPrice" required placeholder="e.g., 8000000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="rbDownPayment">Down Payment (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="rbDownPayment" required placeholder="e.g., 20" value="20">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="rbLoanRate">Home Loan Rate (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="rbLoanRate" required placeholder="e.g., 8.5">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="rbLoanTenure">Loan Tenure (Years) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="rbLoanTenure" required placeholder="e.g., 20">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="rbRent">Current Monthly Rent *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="rbRent" required placeholder="e.g., 25000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="rbRentIncrease">Annual Rent Increase (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="rbRentIncrease" required placeholder="e.g., 5" value="5">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="rbAppreciation">Property Appreciation (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="rbAppreciation" required placeholder="e.g., 5" value="5">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="rbInvestReturn">Investment Return if Renting (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="rbInvestReturn" required placeholder="e.g., 10" value="10">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="rbYears">Comparison Period (Years) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="rbYears" required placeholder="e.g., 20" value="20">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="calculate-btn" onclick="calculateRentVsBuy()">Compare Rent vs Buy</button>
+                </section>
+                <div id="rbResults" style="display:none;">
+                    <section class="results-section">
+                        <h2>📊 Rent vs Buy Results</h2>
+                        <div class="comparison-cards">
+                            <div class="tax-card old-regime">
+                                <h3>Buying</h3>
+                                <div class="tax-amount" id="rbBuyNet">₹0</div>
+                                <div class="tax-details">
+                                    <p>Down Payment: <span id="rbDown">₹0</span></p>
+                                    <p>Total EMI Paid: <span id="rbTotalEMI">₹0</span></p>
+                                    <p>Property Value: <span id="rbPropValue">₹0</span></p>
+                                    <p><strong>Net Cost of Buying: <span id="rbBuyCost">₹0</span></strong></p>
+                                </div>
+                            </div>
+                            <div class="tax-card new-regime">
+                                <h3>Renting + Investing</h3>
+                                <div class="tax-amount" id="rbRentNet">₹0</div>
+                                <div class="tax-details">
+                                    <p>Total Rent Paid: <span id="rbTotalRent">₹0</span></p>
+                                    <p>Investment Corpus: <span id="rbCorpus">₹0</span></p>
+                                    <p><strong>Net Cost of Renting: <span id="rbRentCost">₹0</span></strong></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="recommendation-box" id="rbRecommendation">
+                            <div class="badge">RECOMMENDATION</div>
+                            <h3 id="rbVerdict">—</h3>
+                            <p id="rbSavings">—</p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ============ RETIREMENT CALCULATOR PANEL ============ -->
+            <div id="retirementPanel" class="panel">
+                <h2 class="panel-title">🏖️ Retirement Calculator</h2>
+                <p class="tab-subtitle">Estimate the corpus you need for a comfortable retirement</p>
+                <section class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="retAge">Current Age *</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="retAge" required placeholder="e.g., 30">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="retRetireAge">Retirement Age *</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="retRetireAge" required placeholder="e.g., 60" value="60">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="retLifeExp">Life Expectancy *</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="retLifeExp" required placeholder="e.g., 85" value="85">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="retMonthlyExp">Current Monthly Expenses *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="retMonthlyExp" required placeholder="e.g., 50000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="retInflation">Expected Inflation (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="retInflation" required placeholder="e.g., 6" value="6">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="retPreReturn">Pre-Retirement Return (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="retPreReturn" required placeholder="e.g., 12" value="12">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="retPostReturn">Post-Retirement Return (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="retPostReturn" required placeholder="e.g., 8" value="8">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="retExisting">Existing Savings (optional)</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="retExisting" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="calculate-btn" onclick="calculateRetirement()">Calculate Retirement Plan</button>
+                </section>
+                <div id="retResults" style="display:none;">
+                    <section class="results-section">
+                        <h2>📊 Retirement Plan Results</h2>
+                        <div class="comparison-cards">
+                            <div class="tax-card new-regime">
+                                <h3>Retirement Corpus Needed</h3>
+                                <div class="tax-amount" id="retCorpus">₹0</div>
+                                <div class="tax-details">
+                                    <p>Monthly Expense at Retirement: <span id="retFutureExp">₹0</span></p>
+                                    <p>Years to Retire: <span id="retYearsLeft">0</span></p>
+                                    <p>Retirement Duration: <span id="retDuration">0 years</span></p>
+                                </div>
+                            </div>
+                            <div class="tax-card old-regime">
+                                <h3>Monthly SIP Required</h3>
+                                <div class="tax-amount" id="retSIP">₹0</div>
+                                <div class="tax-details">
+                                    <p>Existing Savings FV: <span id="retExistingFV">₹0</span></p>
+                                    <p>Gap to Fill: <span id="retGap">₹0</span></p>
+                                    <p>SIP Duration: <span id="retSIPDuration">0 years</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ============ EPF CALCULATOR PANEL ============ -->
+            <div id="epfPanel" class="panel">
+                <h2 class="panel-title">🏗️ EPF Calculator</h2>
+                <p class="tab-subtitle">Employee Provident Fund balance projection</p>
+                <section class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="epfBasic">Monthly Basic + DA *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="epfBasic" required placeholder="e.g., 50000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="epfAge">Current Age *</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="epfAge" required placeholder="e.g., 30">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="epfRetireAge">Retirement Age *</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="epfRetireAge" required placeholder="58" value="58">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="epfContrib">Employee Contribution (%)</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="epfContrib" value="12" placeholder="12">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="epfEmployer">Employer EPF (%)</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="epfEmployer" value="3.67" placeholder="3.67">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="epfInterestRate">EPF Interest Rate (%)</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="epfInterestRate" value="8.25" placeholder="8.25">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="epfIncrement">Annual Salary Increment (%)</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="epfIncrement" placeholder="e.g., 5" value="5">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="epfExisting">Existing EPF Balance (optional)</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="epfExisting" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="calculate-btn" onclick="calculateEPF()">Calculate EPF Corpus</button>
+                </section>
+                <div id="epfResults" style="display:none;">
+                    <section class="results-section">
+                        <h2>📊 EPF Results</h2>
+                        <div class="comparison-cards">
+                            <div class="tax-card new-regime">
+                                <h3>EPF Corpus at Retirement</h3>
+                                <div class="tax-amount" id="epfCorpus">₹0</div>
+                                <div class="tax-details">
+                                    <p>Your Contribution: <span id="epfYourTotal">₹0</span></p>
+                                    <p>Employer Contribution: <span id="epfEmployerTotal">₹0</span></p>
+                                    <p>Total Interest Earned: <span id="epfTotalInterest">₹0</span></p>
+                                    <p>Years to Retire: <span id="epfYearsLeft">0</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="breakdown-section">
+                            <h3>📋 Year-wise EPF Growth</h3>
+                            <div class="breakdown-card">
+                                <table id="epfTable">
+                                    <thead><tr><th>Year</th><th>Employee</th><th>Employer</th><th>Interest</th><th>Balance</th></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="export-buttons">
+                            <button class="export-btn" onclick="exportEPF()">📥 Export CSV</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ============ NPS CALCULATOR PANEL ============ -->
+            <div id="npsPanel" class="panel">
+                <h2 class="panel-title">📋 NPS Calculator</h2>
+                <p class="tab-subtitle">National Pension System — project your retirement corpus &amp; pension</p>
+                <section class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="npsMonthly">Monthly Contribution *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="npsMonthly" required placeholder="e.g., 5000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="npsAge">Current Age *</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="npsAge" required placeholder="e.g., 30">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="npsRetireAge">Retirement Age *</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="npsRetireAge" required placeholder="60" value="60">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="npsReturn">Expected Return (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="npsReturn" required placeholder="e.g., 10" value="10">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="npsAnnuity">Annuity Purchase (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="npsAnnuity" required placeholder="40" value="40">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="npsAnnuityReturn">Annuity Return (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="npsAnnuityReturn" required placeholder="6" value="6">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="calculate-btn" onclick="calculateNPS()">Calculate NPS</button>
+                </section>
+                <div id="npsResults" style="display:none;">
+                    <section class="results-section">
+                        <h2>📊 NPS Results</h2>
+                        <div class="comparison-cards">
+                            <div class="tax-card new-regime">
+                                <h3>Total NPS Corpus</h3>
+                                <div class="tax-amount" id="npsCorpus">₹0</div>
+                                <div class="tax-details">
+                                    <p>Total Invested: <span id="npsInvested">₹0</span></p>
+                                    <p>Wealth Gained: <span id="npsGain">₹0</span></p>
+                                </div>
+                            </div>
+                            <div class="tax-card old-regime">
+                                <h3>Pension Details</h3>
+                                <div class="tax-amount" id="npsPension">₹0/mo</div>
+                                <div class="tax-details">
+                                    <p>Lumpsum (60%): <span id="npsLumpsum">₹0</span></p>
+                                    <p>Annuity Purchase (40%): <span id="npsAnnuityAmt">₹0</span></p>
+                                    <p>Monthly Pension: <span id="npsPensionVal">₹0</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ============ INFLATION CALCULATOR PANEL ============ -->
+            <div id="inflationPanel" class="panel">
+                <h2 class="panel-title">📉 Inflation Calculator</h2>
+                <p class="tab-subtitle">Understand how inflation erodes your purchasing power over time</p>
+                <section class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="infAmount">Current Amount *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="infAmount" required placeholder="e.g., 100000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="infRate">Expected Inflation Rate (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="infRate" required placeholder="e.g., 6" value="6">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="infYears">Number of Years *</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="infYears" required placeholder="e.g., 20">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="calculate-btn" onclick="calculateInflation()">Calculate Inflation Impact</button>
+                </section>
+                <div id="infResults" style="display:none;">
+                    <section class="results-section">
+                        <h2>📊 Inflation Impact</h2>
+                        <div class="comparison-cards">
+                            <div class="tax-card new-regime">
+                                <h3>Future Cost</h3>
+                                <div class="tax-amount" id="infFuture">₹0</div>
+                                <div class="tax-details">
+                                    <p>Today's Value: <span id="infToday">₹0</span></p>
+                                    <p>Future Cost (after <span id="infYearsVal">0</span> yrs): <span id="infFutureVal">₹0</span></p>
+                                    <p>Purchasing Power Lost: <span id="infLost">0%</span></p>
+                                </div>
+                            </div>
+                            <div class="tax-card old-regime">
+                                <h3>Real Value</h3>
+                                <div class="tax-amount" id="infReal">₹0</div>
+                                <div class="tax-details">
+                                    <p>₹<span id="infRealToday">0</span> in today's terms will be worth <span id="infRealFuture">₹0</span> in <span id="infRealYears">0</span> years</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="breakdown-section">
+                            <h3>📋 Year-wise Erosion</h3>
+                            <div class="breakdown-card">
+                                <table id="infTable">
+                                    <thead><tr><th>Year</th><th>Future Cost</th><th>Real Value of ₹</th></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ============ CAPITAL GAINS TAX PANEL ============ -->
+            <div id="capGainsPanel" class="panel">
+                <h2 class="panel-title">📑 Capital Gains Tax Calculator</h2>
+                <p class="tab-subtitle">Calculate STCG &amp; LTCG tax on Equity, Debt and Property</p>
+                <section class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="cgAssetType">Asset Type</label>
+                            <select id="cgAssetType">
+                                <option value="equity">Listed Equity / Equity MF</option>
+                                <option value="debt">Debt MF / Bonds</option>
+                                <option value="property">Real Estate / Property</option>
+                                <option value="gold">Gold / Gold ETF</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cgPurchasePrice">Purchase Price *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="cgPurchasePrice" required placeholder="e.g., 500000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="cgSalePrice">Sale Price *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="cgSalePrice" required placeholder="e.g., 800000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="cgHoldingMonths">Holding Period (Months) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="cgHoldingMonths" required placeholder="e.g., 18">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="cgExpenses">Expenses (Brokerage, etc.)</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="cgExpenses" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="calculate-btn" onclick="calculateCapGains()">Calculate Capital Gains Tax</button>
+                </section>
+                <div id="cgResults" style="display:none;">
+                    <section class="results-section">
+                        <h2>📊 Capital Gains Tax Results</h2>
+                        <div class="comparison-cards">
+                            <div class="tax-card new-regime">
+                                <h3 id="cgGainType">Long-Term Capital Gain</h3>
+                                <div class="tax-amount" id="cgGainAmount">₹0</div>
+                                <div class="tax-details">
+                                    <p>Purchase Price: <span id="cgPurchase">₹0</span></p>
+                                    <p>Sale Price: <span id="cgSale">₹0</span></p>
+                                    <p>Expenses: <span id="cgExp">₹0</span></p>
+                                    <p>Net Gain: <span id="cgNet">₹0</span></p>
+                                </div>
+                            </div>
+                            <div class="tax-card old-regime">
+                                <h3>Tax Payable</h3>
+                                <div class="tax-amount" id="cgTaxAmount">₹0</div>
+                                <div class="tax-details">
+                                    <p>Tax Rate: <span id="cgTaxRate">0%</span></p>
+                                    <p>Exemption: <span id="cgExemption">₹0</span></p>
+                                    <p>Taxable Gain: <span id="cgTaxableGain">₹0</span></p>
+                                    <p>Tax + Cess (4%): <span id="cgTaxCess">₹0</span></p>
+                                </div>
+                            </div>
                         </div>
                     </section>
                 </div>
