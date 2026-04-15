@@ -1,27 +1,62 @@
-# VittWise 💰 - Smart Tax Regime Calculator
+# VittWise ₹ - Smart Financial Calculator Suite
 
 > **Vitt (वित्त)** = Finance in Hindi | **Wise** = Smart
 
-A simple, client-side tax calculator to compare **Old vs New Tax Regime** for **Individual Salaried Employees**. Supports Financial Years 2023-24 through 2026-27 with accurate slabs per official Income Tax Department rules.
+A comprehensive, client-side financial calculator suite for Indian users. Compare tax regimes, plan investments, estimate EMIs, and more — all calculations run locally in your browser with zero data tracking.
 
 ## Live Demo
 
 🌐 **Visit: https://devopsarts.github.io/VittWise/**
 
+## Calculators
+
+| # | Calculator | Description |
+|---|-----------|-------------|
+| 1 | **Tax Regime Comparator** | Old vs New regime comparison for FY 2023-24 to FY 2026-27 |
+| 2 | **SIP Calculator** | Systematic Investment Plan returns with wealth gain breakdown |
+| 3 | **FD / RD Calculator** | Fixed & Recurring Deposit maturity with interest calculation |
+| 4 | **PPF Calculator** | Public Provident Fund projections over 15+ years |
+| 5 | **HRA Exemption** | Calculate HRA exemption under Section 10(13A) |
+| 6 | **Home Loan EMI** | EMI, total interest, amortization with pie chart |
+| 7 | **Personal Loan EMI** | EMI breakdown with principal vs interest split |
+| 8 | **Car Loan EMI** | Auto loan EMI with visual breakdown |
+| 9 | **Lumpsum Calculator** | One-time investment growth projections |
+| 10 | **Rent vs Buy** | Compare renting vs buying a house over time |
+| 11 | **Retirement Planner** | Estimate retirement corpus needed based on expenses |
+| 12 | **EPF Calculator** | Employee Provident Fund maturity with employer contribution |
+| 13 | **NPS Calculator** | National Pension System corpus and annuity estimate |
+| 14 | **Inflation Calculator** | Future value of money adjusted for inflation |
+| 15 | **Capital Gains** | STCG/LTCG tax on equity, debt, and property |
+| 16 | **Gratuity Calculator** | Old structure vs New Labour Code comparison |
+
 ## Features
 
+### Home Page
+- **Search Bar**: Instantly filter and find any calculator
+- **Card Grid**: Visual navigation with icons for all 16 calculators
+- **VittWise Logo**: Hidden on home page; shown on calculator pages as a back-to-home button
+
+### Interactive Pie Charts
+- **Donut charts** on 9 calculators (loans, SIP, FD/RD, PPF, Lumpsum, EPF, NPS)
+- **3D hover effect**: Slices explode outward with shadow on hover
+- **Center tooltip**: Shows value and percentage on hover
+- **Unique color schemes**: Each calculator has its own distinct color palette
+- Built with pure Canvas 2D API — no external chart library
+
+### Tax Calculator
 - **Multi-FY Support**: Switch between FY 2026-27, FY 2025-26, FY 2024-25, and FY 2023-24
 - **Compare Tax Regimes**: Instantly see which regime saves you more tax
 - **Age Group Aware**: Correct slabs for Below 60 / Senior Citizen (60-79) / Super Senior Citizen (80+)
 - **All Major Deductions**: HRA, 80C, 80D, 80CCD(1B), 80CCD(2), 24(b), 80E, 80G
 - **Employer Type**: Separate 80CCD(2) limits — 10% (Private/PSU) vs 14% (Govt) in old regime; 14% for all in new regime
 - **Surcharge Calculation**: Full surcharge with marginal relief at ₹50L, ₹1Cr, ₹2Cr, ₹5Cr thresholds
-- **Gratuity Calculator**: Compare old vs new Labour Code structure (Basic vs Wages)
+
+### General
 - **CSV Export**: Download results as Excel-compatible CSV (UTF-8 with BOM)
 - **Decimal Inputs**: Supports paisa-level precision in all fields
-- **Real-time Calculations**: No server required — all calculations in browser
+- **Privacy Popup**: Bottom popup on first visit confirming no data is tracked (dismissible, remembered via localStorage)
+- **Real-time Calculations**: No server required — 100% client-side
 - **Mobile Responsive**: Works on all devices
-- **Privacy Focused**: No data is stored or transmitted
 
 ## Supported Deductions
 
@@ -115,9 +150,9 @@ Compares gratuity under:
 
 ```
 VittWise/
-├── index.html      # Main HTML page
-├── styles.css      # Styling
-├── script.js       # Tax calculation logic
+├── index.html      # Home page + all 16 calculator panels
+├── styles.css      # Styling (home grid, pie charts, popups, responsive)
+├── script.js       # All calculator logic, pie charts, panel switching
 ├── assets/         # Icons and images
 └── README.md       # This file
 ```
