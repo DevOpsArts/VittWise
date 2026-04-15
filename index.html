@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VittWise - Smart Tax Regime Calculator FY 2026-27</title>
+    <title>VittWise - Smart Financial Calculator</title>
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -25,30 +25,37 @@
         <svg height="28" width="28" viewBox="0 0 16 16" fill="currentColor">
             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
         </svg>
-        </svg>
     </a>
-    
-    <div class="container">
-        <header>
-            <div class="header-content">
+
+    <div class="app-layout">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
                 <div class="logo">
                     <h1><span class="rupee-icon">₹</span> VittWise</h1>
                     <span class="logo-subtitle">India</span>
                 </div>
-                <nav class="tab-navigation">
-                    <button class="tab-btn active" data-tab="taxTab" onclick="switchTab('taxTab')">
-                        📊 Tax Regime
-                    </button>
-                    <button class="tab-btn" data-tab="gratuityTab" onclick="switchTab('gratuityTab')">
-                        🎁 Gratuity
-                    </button>
-                </nav>
             </div>
-        </header>
+            <nav class="sidebar-nav">
+                <button class="sidebar-btn active" data-panel="taxPanel" onclick="switchPanel('taxPanel')">
+                    📊 Tax Regime
+                </button>
+                <button class="sidebar-btn" data-panel="homeLoanPanel" onclick="switchPanel('homeLoanPanel')">
+                    🏠 Home Loan
+                </button>
+                <button class="sidebar-btn" data-panel="personalLoanPanel" onclick="switchPanel('personalLoanPanel')">
+                    💳 Personal Loan
+                </button>
+                <button class="sidebar-btn" data-panel="gratuityPanel" onclick="switchPanel('gratuityPanel')">
+                    🎁 Gratuity
+                </button>
+            </nav>
+        </aside>
 
-        <main>
-            <!-- Tax Regime Tab Content -->
-            <div id="taxTab" class="tab-content active">
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- ============ TAX REGIME PANEL ============ -->
+            <div id="taxPanel" class="panel active">
                 <!-- FY Sub-Tabs -->
                 <div class="fy-tab-nav">
                     <button class="fy-tab-btn active" data-fy="fy2026" onclick="switchFY('fy2026')">FY 2026-27</button>
@@ -351,8 +358,178 @@
             </form>
             </div>
 
-            <!-- Gratuity Tab Content -->
-            <div id="gratuityTab" class="tab-content">
+            <!-- ============ HOME LOAN PANEL ============ -->
+            <div id="homeLoanPanel" class="panel">
+                <h2 class="panel-title">🏠 Home Loan EMI Calculator</h2>
+                <p class="tab-subtitle">Calculate your EMI, total interest and prepayment savings</p>
+                <section class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="hlLoanAmount">Loan Amount *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="hlLoanAmount" required placeholder="e.g., 5000000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="hlInterestRate">Annual Interest Rate (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="hlInterestRate" required placeholder="e.g., 8.5">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="hlTenure">Loan Tenure (Years) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="hlTenure" required placeholder="e.g., 20">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="hlExtraEmi">Additional Monthly Payment (optional)</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="hlExtraEmi" placeholder="e.g., 10000">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="calculate-btn" onclick="calculateHomeLoan()">Calculate Home Loan EMI</button>
+                </section>
+                <div id="hlResults" style="display:none;">
+                    <section class="results-section">
+                        <h2>📊 Home Loan Results</h2>
+                        <div class="comparison-cards">
+                            <div class="tax-card new-regime">
+                                <h3>Without Prepayment</h3>
+                                <div class="tax-amount" id="hlEmi">₹0</div>
+                                <div class="tax-details">
+                                    <p>Monthly EMI: <span id="hlEmiVal">₹0</span></p>
+                                    <p>Total Interest: <span id="hlTotalInterest">₹0</span></p>
+                                    <p>Total Payment: <span id="hlTotalPayment">₹0</span></p>
+                                    <p>Tenure: <span id="hlTenureVal">0 months</span></p>
+                                </div>
+                            </div>
+                            <div class="tax-card old-regime" id="hlPrepayCard" style="display:none;">
+                                <h3>With Prepayment</h3>
+                                <div class="tax-amount" id="hlPrepayEmi">₹0</div>
+                                <div class="tax-details">
+                                    <p>Monthly Payment: <span id="hlPrepayEmiVal">₹0</span></p>
+                                    <p>Total Interest: <span id="hlPrepayInterest">₹0</span></p>
+                                    <p>Total Payment: <span id="hlPrepayTotal">₹0</span></p>
+                                    <p>Tenure: <span id="hlPrepayTenure">0 months</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="recommendation-box" id="hlSavingsBox" style="display:none;">
+                            <div class="badge">PREPAYMENT BENEFIT</div>
+                            <h3 id="hlSavingsAmount">₹0</h3>
+                            <p id="hlSavingsText">Interest saved</p>
+                            <p id="hlTimeSaved">Time saved: 0 months</p>
+                        </div>
+                        <!-- Amortization Schedule -->
+                        <div class="breakdown-section">
+                            <h3>📋 Year-wise Amortization Schedule</h3>
+                            <div class="breakdown-card">
+                                <table id="hlAmortTable">
+                                    <thead>
+                                        <tr><th>Year</th><th>Principal</th><th>Interest</th><th>Balance</th></tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="export-buttons">
+                            <button class="export-btn" onclick="exportHomeLoan()">📥 Export CSV</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ============ PERSONAL LOAN PANEL ============ -->
+            <div id="personalLoanPanel" class="panel">
+                <h2 class="panel-title">💳 Personal Loan EMI Calculator</h2>
+                <p class="tab-subtitle">Calculate your EMI, total interest and prepayment savings</p>
+                <section class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="plLoanAmount">Loan Amount *</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="plLoanAmount" required placeholder="e.g., 500000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="plInterestRate">Annual Interest Rate (%) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="plInterestRate" required placeholder="e.g., 12">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="plTenure">Loan Tenure (Years) *</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="any" id="plTenure" required placeholder="e.g., 5">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="plExtraEmi">Additional Monthly Payment (optional)</label>
+                            <div class="input-wrapper">
+                                <span class="currency">₹</span>
+                                <input type="number" step="any" id="plExtraEmi" placeholder="e.g., 5000">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="calculate-btn" onclick="calculatePersonalLoan()">Calculate Personal Loan EMI</button>
+                </section>
+                <div id="plResults" style="display:none;">
+                    <section class="results-section">
+                        <h2>📊 Personal Loan Results</h2>
+                        <div class="comparison-cards">
+                            <div class="tax-card new-regime">
+                                <h3>Without Prepayment</h3>
+                                <div class="tax-amount" id="plEmi">₹0</div>
+                                <div class="tax-details">
+                                    <p>Monthly EMI: <span id="plEmiVal">₹0</span></p>
+                                    <p>Total Interest: <span id="plTotalInterest">₹0</span></p>
+                                    <p>Total Payment: <span id="plTotalPayment">₹0</span></p>
+                                    <p>Tenure: <span id="plTenureVal">0 months</span></p>
+                                </div>
+                            </div>
+                            <div class="tax-card old-regime" id="plPrepayCard" style="display:none;">
+                                <h3>With Prepayment</h3>
+                                <div class="tax-amount" id="plPrepayEmi">₹0</div>
+                                <div class="tax-details">
+                                    <p>Monthly Payment: <span id="plPrepayEmiVal">₹0</span></p>
+                                    <p>Total Interest: <span id="plPrepayInterest">₹0</span></p>
+                                    <p>Total Payment: <span id="plPrepayTotal">₹0</span></p>
+                                    <p>Tenure: <span id="plPrepayTenure">0 months</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="recommendation-box" id="plSavingsBox" style="display:none;">
+                            <div class="badge">PREPAYMENT BENEFIT</div>
+                            <h3 id="plSavingsAmount">₹0</h3>
+                            <p id="plSavingsText">Interest saved</p>
+                            <p id="plTimeSaved">Time saved: 0 months</p>
+                        </div>
+                        <!-- Amortization Schedule -->
+                        <div class="breakdown-section">
+                            <h3>📋 Year-wise Amortization Schedule</h3>
+                            <div class="breakdown-card">
+                                <table id="plAmortTable">
+                                    <thead>
+                                        <tr><th>Year</th><th>Principal</th><th>Interest</th><th>Balance</th></tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="export-buttons">
+                            <button class="export-btn" onclick="exportPersonalLoan()">📥 Export CSV</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ============ GRATUITY PANEL ============ -->
+            <div id="gratuityPanel" class="panel">
                 <p class="tab-subtitle">Gratuity Calculator - Understanding the New Labour Laws</p>
                 <section class="form-section gratuity-section">
                 <h2>🎁 Gratuity Calculator</h2>
@@ -418,13 +595,13 @@
                 </div>
             </section>
             </div>
-        </main>
+        </div><!-- /main-content -->
+    </div><!-- /app-layout -->
 
-        <footer>
-            <p>Disclaimer: This calculator is for informational purposes only. Please consult a tax professional for accurate tax planning.</p>
-            <p>Tax slabs are as per Union Budget 2025-26</p>
-        </footer>
-    </div>
+    <footer>
+        <p>Disclaimer: This calculator is for informational purposes only. Please consult a tax professional for accurate tax planning.</p>
+        <p>Tax slabs are as per Union Budget 2025-26</p>
+    </footer>
 
     <script src="script.js"></script>
 </body>

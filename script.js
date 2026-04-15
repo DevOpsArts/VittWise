@@ -78,23 +78,20 @@ function closeAnnouncement() {
     document.getElementById('announcementBar').classList.add('hidden');
 }
 
-// Tab Switching Function
+// Tab Switching Function (legacy - kept for compatibility)
 function switchTab(tabId) {
-    // Hide all tab contents
-    document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    
-    // Remove active class from all tab buttons
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // Show selected tab content
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
-    
-    // Add active class to clicked button
     document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+}
+
+// Panel Switching (sidebar navigation)
+function switchPanel(panelId) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(panelId).classList.add('active');
+    document.querySelector(`[data-panel="${panelId}"]`).classList.add('active');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -772,4 +769,234 @@ function downloadFile(content, filename, contentType) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+}
+
+// ============ LOAN EMI CALCULATOR (shared logic) ============
+function calculateEMI(principal, annualRate, tenureMonths) {
+    const r = annualRate / 12 / 100;
+    if (r === 0) return principal / tenureMonths;
+    return principal * r * Math.pow(1 + r, tenureMonths) / (Math.pow(1 + r, tenureMonths) - 1);
+}
+
+function computeLoanSchedule(principal, annualRate, tenureMonths, extraMonthly) {
+    const r = annualRate / 12 / 100;
+    const emi = calculateEMI(principal, annualRate, tenureMonths);
+    let balance = principal;
+    let totalInterest = 0;
+    let totalPaid = 0;
+    let month = 0;
+    const yearlyData = [];
+    let yearPrincipal = 0, yearInterest = 0;
+
+    while (balance > 0.5 && month < tenureMonths * 2) {
+        month++;
+        const interestPart = balance * r;
+        let principalPart = emi - interestPart + extraMonthly;
+        if (principalPart > balance) principalPart = balance;
+        const payment = interestPart + principalPart;
+
+        totalInterest += interestPart;
+        totalPaid += payment;
+        yearPrincipal += principalPart;
+        yearInterest += interestPart;
+        balance -= principalPart;
+        if (balance < 0.5) balance = 0;
+
+        if (month % 12 === 0 || balance === 0) {
+            yearlyData.push({
+                year: Math.ceil(month / 12),
+                principal: yearPrincipal,
+                interest: yearInterest,
+                balance: balance
+            });
+            yearPrincipal = 0;
+            yearInterest = 0;
+        }
+    }
+
+    return { emi, totalInterest, totalPaid, months: month, yearlyData };
+}
+
+function populateAmortTable(tableId, yearlyData) {
+    const tbody = document.querySelector('#' + tableId + ' tbody');
+    tbody.innerHTML = '';
+    yearlyData.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + row.year + '</td><td>' + formatCurrency(Math.round(row.principal)) + '</td><td>' + formatCurrency(Math.round(row.interest)) + '</td><td>' + formatCurrency(Math.round(row.balance)) + '</td>';
+        tbody.appendChild(tr);
+    });
+}
+
+// ============ HOME LOAN CALCULATOR ============
+function calculateHomeLoan() {
+    const principal = getInputValue('hlLoanAmount');
+    const rate = parseFloat(document.getElementById('hlInterestRate').value) || 0;
+    const tenureYears = parseFloat(document.getElementById('hlTenure').value) || 0;
+    const extra = getInputValue('hlExtraEmi');
+
+    if (principal <= 0 || rate <= 0 || tenureYears <= 0) {
+        alert('Please enter valid Loan Amount, Interest Rate and Tenure');
+        return;
+    }
+
+    const tenureMonths = Math.round(tenureYears * 12);
+    const normal = computeLoanSchedule(principal, rate, tenureMonths, 0);
+
+    document.getElementById('hlResults').style.display = 'block';
+    document.getElementById('hlEmi').textContent = formatCurrency(Math.round(normal.emi));
+    document.getElementById('hlEmiVal').textContent = formatCurrency(Math.round(normal.emi));
+    document.getElementById('hlTotalInterest').textContent = formatCurrency(Math.round(normal.totalInterest));
+    document.getElementById('hlTotalPayment').textContent = formatCurrency(Math.round(normal.totalPaid));
+    document.getElementById('hlTenureVal').textContent = normal.months + ' months (' + (normal.months / 12).toFixed(1) + ' yrs)';
+    populateAmortTable('hlAmortTable', normal.yearlyData);
+
+    if (extra > 0) {
+        const prepay = computeLoanSchedule(principal, rate, tenureMonths, extra);
+        document.getElementById('hlPrepayCard').style.display = 'block';
+        document.getElementById('hlPrepayEmi').textContent = formatCurrency(Math.round(normal.emi + extra));
+        document.getElementById('hlPrepayEmiVal').textContent = formatCurrency(Math.round(normal.emi + extra));
+        document.getElementById('hlPrepayInterest').textContent = formatCurrency(Math.round(prepay.totalInterest));
+        document.getElementById('hlPrepayTotal').textContent = formatCurrency(Math.round(prepay.totalPaid));
+        document.getElementById('hlPrepayTenure').textContent = prepay.months + ' months (' + (prepay.months / 12).toFixed(1) + ' yrs)';
+
+        const saved = Math.round(normal.totalInterest - prepay.totalInterest);
+        const timeSaved = normal.months - prepay.months;
+        document.getElementById('hlSavingsBox').style.display = 'block';
+        document.getElementById('hlSavingsAmount').textContent = formatCurrency(saved);
+        document.getElementById('hlSavingsText').textContent = 'Interest saved with prepayment';
+        document.getElementById('hlTimeSaved').textContent = 'Time saved: ' + timeSaved + ' months (' + (timeSaved / 12).toFixed(1) + ' yrs)';
+    } else {
+        document.getElementById('hlPrepayCard').style.display = 'none';
+        document.getElementById('hlSavingsBox').style.display = 'none';
+    }
+
+    document.getElementById('hlResults').scrollIntoView({ behavior: 'smooth' });
+}
+
+function exportHomeLoan() {
+    const principal = getInputValue('hlLoanAmount');
+    const rate = parseFloat(document.getElementById('hlInterestRate').value) || 0;
+    const tenureYears = parseFloat(document.getElementById('hlTenure').value) || 0;
+    const extra = getInputValue('hlExtraEmi');
+    const tenureMonths = Math.round(tenureYears * 12);
+    const normal = computeLoanSchedule(principal, rate, tenureMonths, 0);
+
+    const rows = [
+        csvRow('VittWise Home Loan Report'),
+        csvRow('Generated on', new Date().toLocaleString('en-IN')),
+        '',
+        csvRow('Loan Amount', formatCurrency(principal)),
+        csvRow('Interest Rate', rate + '%'),
+        csvRow('Tenure', tenureYears + ' years'),
+        csvRow('Monthly EMI', formatCurrency(Math.round(normal.emi))),
+        csvRow('Total Interest', formatCurrency(Math.round(normal.totalInterest))),
+        csvRow('Total Payment', formatCurrency(Math.round(normal.totalPaid))),
+        ''
+    ];
+
+    if (extra > 0) {
+        const prepay = computeLoanSchedule(principal, rate, tenureMonths, extra);
+        const saved = Math.round(normal.totalInterest - prepay.totalInterest);
+        rows.push(csvRow('--- With Prepayment ---'));
+        rows.push(csvRow('Additional Monthly', formatCurrency(extra)));
+        rows.push(csvRow('Total Interest (Prepay)', formatCurrency(Math.round(prepay.totalInterest))));
+        rows.push(csvRow('Interest Saved', formatCurrency(saved)));
+        rows.push(csvRow('Time Saved', (normal.months - prepay.months) + ' months'));
+        rows.push('');
+    }
+
+    rows.push(csvRow('Year', 'Principal', 'Interest', 'Balance'));
+    normal.yearlyData.forEach(function(r) {
+        rows.push(csvRow(r.year, formatCurrency(Math.round(r.principal)), formatCurrency(Math.round(r.interest)), formatCurrency(Math.round(r.balance))));
+    });
+    rows.push('', csvRow('Generated by VittWise India', 'https://devopsarts.github.io/VittWise/'));
+
+    downloadFile('\ufeff' + rows.join('\n'), 'VittWise_HomeLoan.csv', 'text/csv;charset=utf-8;');
+}
+
+// ============ PERSONAL LOAN CALCULATOR ============
+function calculatePersonalLoan() {
+    const principal = getInputValue('plLoanAmount');
+    const rate = parseFloat(document.getElementById('plInterestRate').value) || 0;
+    const tenureYears = parseFloat(document.getElementById('plTenure').value) || 0;
+    const extra = getInputValue('plExtraEmi');
+
+    if (principal <= 0 || rate <= 0 || tenureYears <= 0) {
+        alert('Please enter valid Loan Amount, Interest Rate and Tenure');
+        return;
+    }
+
+    const tenureMonths = Math.round(tenureYears * 12);
+    const normal = computeLoanSchedule(principal, rate, tenureMonths, 0);
+
+    document.getElementById('plResults').style.display = 'block';
+    document.getElementById('plEmi').textContent = formatCurrency(Math.round(normal.emi));
+    document.getElementById('plEmiVal').textContent = formatCurrency(Math.round(normal.emi));
+    document.getElementById('plTotalInterest').textContent = formatCurrency(Math.round(normal.totalInterest));
+    document.getElementById('plTotalPayment').textContent = formatCurrency(Math.round(normal.totalPaid));
+    document.getElementById('plTenureVal').textContent = normal.months + ' months (' + (normal.months / 12).toFixed(1) + ' yrs)';
+    populateAmortTable('plAmortTable', normal.yearlyData);
+
+    if (extra > 0) {
+        const prepay = computeLoanSchedule(principal, rate, tenureMonths, extra);
+        document.getElementById('plPrepayCard').style.display = 'block';
+        document.getElementById('plPrepayEmi').textContent = formatCurrency(Math.round(normal.emi + extra));
+        document.getElementById('plPrepayEmiVal').textContent = formatCurrency(Math.round(normal.emi + extra));
+        document.getElementById('plPrepayInterest').textContent = formatCurrency(Math.round(prepay.totalInterest));
+        document.getElementById('plPrepayTotal').textContent = formatCurrency(Math.round(prepay.totalPaid));
+        document.getElementById('plPrepayTenure').textContent = prepay.months + ' months (' + (prepay.months / 12).toFixed(1) + ' yrs)';
+
+        const saved = Math.round(normal.totalInterest - prepay.totalInterest);
+        const timeSaved = normal.months - prepay.months;
+        document.getElementById('plSavingsBox').style.display = 'block';
+        document.getElementById('plSavingsAmount').textContent = formatCurrency(saved);
+        document.getElementById('plSavingsText').textContent = 'Interest saved with prepayment';
+        document.getElementById('plTimeSaved').textContent = 'Time saved: ' + timeSaved + ' months (' + (timeSaved / 12).toFixed(1) + ' yrs)';
+    } else {
+        document.getElementById('plPrepayCard').style.display = 'none';
+        document.getElementById('plSavingsBox').style.display = 'none';
+    }
+
+    document.getElementById('plResults').scrollIntoView({ behavior: 'smooth' });
+}
+
+function exportPersonalLoan() {
+    const principal = getInputValue('plLoanAmount');
+    const rate = parseFloat(document.getElementById('plInterestRate').value) || 0;
+    const tenureYears = parseFloat(document.getElementById('plTenure').value) || 0;
+    const extra = getInputValue('plExtraEmi');
+    const tenureMonths = Math.round(tenureYears * 12);
+    const normal = computeLoanSchedule(principal, rate, tenureMonths, 0);
+
+    const rows = [
+        csvRow('VittWise Personal Loan Report'),
+        csvRow('Generated on', new Date().toLocaleString('en-IN')),
+        '',
+        csvRow('Loan Amount', formatCurrency(principal)),
+        csvRow('Interest Rate', rate + '%'),
+        csvRow('Tenure', tenureYears + ' years'),
+        csvRow('Monthly EMI', formatCurrency(Math.round(normal.emi))),
+        csvRow('Total Interest', formatCurrency(Math.round(normal.totalInterest))),
+        csvRow('Total Payment', formatCurrency(Math.round(normal.totalPaid))),
+        ''
+    ];
+
+    if (extra > 0) {
+        const prepay = computeLoanSchedule(principal, rate, tenureMonths, extra);
+        const saved = Math.round(normal.totalInterest - prepay.totalInterest);
+        rows.push(csvRow('--- With Prepayment ---'));
+        rows.push(csvRow('Additional Monthly', formatCurrency(extra)));
+        rows.push(csvRow('Total Interest (Prepay)', formatCurrency(Math.round(prepay.totalInterest))));
+        rows.push(csvRow('Interest Saved', formatCurrency(saved)));
+        rows.push(csvRow('Time Saved', (normal.months - prepay.months) + ' months'));
+        rows.push('');
+    }
+
+    rows.push(csvRow('Year', 'Principal', 'Interest', 'Balance'));
+    normal.yearlyData.forEach(function(r) {
+        rows.push(csvRow(r.year, formatCurrency(Math.round(r.principal)), formatCurrency(Math.round(r.interest)), formatCurrency(Math.round(r.balance))));
+    });
+    rows.push('', csvRow('Generated by VittWise India', 'https://devopsarts.github.io/VittWise/'));
+
+    downloadFile('\ufeff' + rows.join('\n'), 'VittWise_PersonalLoan.csv', 'text/csv;charset=utf-8;');
 }

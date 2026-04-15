@@ -81,34 +81,40 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
-    padding: 0 20px 20px 20px;
+    padding: 0;
 }
 
-.container {
-    max-width: 900px;
-    margin: 20px auto;
-    background: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    overflow: hidden;
-}
-
-header {
-    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
-    color: white;
-    padding: 20px 30px;
-}
-
-.header-content {
+/* ============ APP LAYOUT (Sidebar + Main) ============ */
+.app-layout {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
+    min-height: calc(100vh - 60px);
+    max-width: 1300px;
+    margin: 0 auto;
+    background: #ffffff;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: linear-gradient(180deg, #1e3a5f 0%, #2c5282 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .logo h1 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 700;
     margin: 0;
     display: flex;
@@ -130,17 +136,73 @@ header {
 }
 
 .logo-subtitle {
-    font-size: 0.75rem;
-    opacity: 0.8;
+    font-size: 0.7rem;
+    opacity: 0.6;
     letter-spacing: 2px;
     text-transform: uppercase;
     margin-left: 46px;
 }
 
-.tab-navigation {
+.sidebar-nav {
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px 12px;
+    flex: 1;
+}
+
+.sidebar-btn {
+    display: flex;
     align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 16px;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.sidebar-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.sidebar-btn.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-weight: 600;
+    box-shadow: inset 3px 0 0 #ffd93d;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    min-width: 0;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+/* Panel visibility */
+.panel {
+    display: none;
+}
+
+.panel.active {
+    display: block;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.panel-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin-bottom: 8px;
 }
 
 .github-link {
@@ -158,28 +220,6 @@ header {
 .github-link:hover {
     opacity: 1;
     transform: scale(1.1);
-}
-
-.tab-btn {
-    padding: 12px 24px;
-    border: none;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.tab-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-.tab-btn.active {
-    background: white;
-    color: #1e3a5f;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* FY Sub-Tab Navigation */
@@ -213,15 +253,6 @@ header {
     box-shadow: 0 2px 8px rgba(30, 58, 95, 0.3);
 }
 
-.tab-content {
-    display: none;
-}
-
-.tab-content.active {
-    display: block;
-    animation: fadeIn 0.3s ease-out;
-}
-
 .tab-subtitle {
     text-align: center;
     color: #4a5568;
@@ -233,10 +264,6 @@ header {
 .subtitle {
     opacity: 0.9;
     font-size: 1rem;
-}
-
-main {
-    padding: 30px;
 }
 
 .form-section {
@@ -388,6 +415,7 @@ input[type="number"] {
 }
 
 .calculate-btn {
+    margin-top: 20px;
     width: 100%;
     padding: 16px 24px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -631,6 +659,8 @@ footer {
     padding: 20px 30px;
     text-align: center;
     font-size: 0.85rem;
+    max-width: 1300px;
+    margin: 0 auto;
 }
 
 footer p {
@@ -638,32 +668,56 @@ footer p {
 }
 
 /* Responsive */
-@media (max-width: 640px) {
-    body {
-        padding: 10px;
-    }
-    
-    .header-content {
+@media (max-width: 900px) {
+    .app-layout {
         flex-direction: column;
-        text-align: center;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-width: unset;
+        height: auto;
+        position: relative;
+        flex-direction: column;
+    }
+
+    .sidebar-header {
+        padding: 16px 20px 10px;
+    }
+
+    .sidebar-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 6px;
+        padding: 10px 12px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .sidebar-btn {
+        white-space: nowrap;
+        padding: 10px 14px;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    .sidebar-btn.active {
+        box-shadow: none;
+        border-bottom: 3px solid #ffd93d;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 640px) {
+    .main-content {
+        padding: 15px;
     }
     
     .logo h1 {
-        font-size: 1.5rem;
-    }
-    
-    .tab-navigation {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .tab-btn {
-        padding: 10px 16px;
-        font-size: 0.9rem;
-    }
-    
-    main {
-        padding: 20px;
+        font-size: 1.3rem;
     }
     
     .form-section {
@@ -672,6 +726,10 @@ footer p {
     
     .tax-card .tax-amount {
         font-size: 1.5rem;
+    }
+
+    .panel-title {
+        font-size: 1.3rem;
     }
 }
 
